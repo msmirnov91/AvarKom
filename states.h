@@ -1,0 +1,6 @@
+#ifndef STATES_H
+#define STATES_H
+
+enum AVARKOM_STATES {AUTO, FIRST_SOURCE, SECOND_SOURCE};
+
+#endif // STATES_H
