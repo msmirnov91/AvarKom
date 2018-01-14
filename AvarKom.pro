@@ -26,7 +26,6 @@ HEADERS  += mainwindow.h \
     parser.h \
     presenter.h \
     avarkom.h \
-    request.h \
-    common.h
+    request.h
 
 FORMS    += mainwindow.ui

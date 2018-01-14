@@ -1,21 +1,13 @@
 #include "request.h"
 
-Request::Request(REQUEST_CODE requestCode, bool isQuery){
+Request::Request(REQUEST_CODE requestCode){
     code = requestCode;
-
     cmd = COMMANDS[requestCode];
-
-    this->isQuery = isQuery;
-
-    if (isQuery){
-        cmd = QString("?") + cmd;
-    }
 
 }
 
 void Request::setParameter(int param){
-    // all parameters are in percents
-    if (isQuery || param > 100){
+    if (param > 100){ // may be wrong condition!
         return;
     }
 

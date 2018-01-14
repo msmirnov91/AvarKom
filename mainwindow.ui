@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>654</width>
-    <height>426</height>
+    <height>442</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -94,7 +94,7 @@
           <item row="0" column="2">
            <widget class="QLabel" name="portLabel">
             <property name="text">
-             <string>Port</string>
+             <string>Порт</string>
             </property>
            </widget>
           </item>
@@ -102,6 +102,25 @@
            <widget class="QSpinBox" name="portSpinBox">
             <property name="value">
              <number>90</number>
+            </property>
+           </widget>
+          </item>
+         </layout>
+        </widget>
+       </item>
+       <item row="1" column="0" colspan="2">
+        <widget class="QGroupBox" name="connStateGB">
+         <property name="title">
+          <string>Статус</string>
+         </property>
+         <layout class="QGridLayout" name="gridLayout_8">
+          <item row="0" column="0">
+           <widget class="QLabel" name="connStateLabel">
+            <property name="text">
+             <string>Разъединен</string>
+            </property>
+            <property name="alignment">
+             <set>Qt::AlignCenter</set>
             </property>
            </widget>
           </item>
@@ -131,22 +150,6 @@
            <widget class="QPushButton" name="disconnectButton">
             <property name="text">
              <string>Разъединить</string>
-            </property>
-           </widget>
-          </item>
-         </layout>
-        </widget>
-       </item>
-       <item row="1" column="0" colspan="2">
-        <widget class="QGroupBox" name="connStateGB">
-         <property name="title">
-          <string>Статус</string>
-         </property>
-         <layout class="QGridLayout" name="gridLayout_8">
-          <item row="0" column="0">
-           <widget class="QLabel" name="connStateLabel">
-            <property name="text">
-             <string>Разъединен</string>
             </property>
            </widget>
           </item>
@@ -245,37 +248,144 @@
     <item row="0" column="2" rowspan="3">
      <widget class="QGroupBox" name="paramsGB">
       <property name="title">
-       <string>Параметры коммутации</string>
+       <string>Настройки</string>
       </property>
-      <layout class="QFormLayout" name="formLayout">
-       <property name="fieldGrowthPolicy">
-        <enum>QFormLayout::AllNonFixedFieldsGrow</enum>
-       </property>
-       <item row="1" column="0">
-        <widget class="QLabel" name="label">
-         <property name="text">
-          <string>Верхняя граница</string>
+      <layout class="QVBoxLayout" name="verticalLayout">
+       <item>
+        <widget class="QGroupBox" name="groupBox">
+         <property name="title">
+          <string>Параметры коммутации</string>
          </property>
+         <layout class="QFormLayout" name="formLayout">
+          <property name="fieldGrowthPolicy">
+           <enum>QFormLayout::AllNonFixedFieldsGrow</enum>
+          </property>
+          <property name="labelAlignment">
+           <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+          </property>
+          <item row="1" column="0">
+           <widget class="QLabel" name="label">
+            <property name="text">
+             <string>Уровень звука</string>
+            </property>
+            <property name="alignment">
+             <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+            </property>
+           </widget>
+          </item>
+          <item row="1" column="1">
+           <widget class="QSpinBox" name="loudThresholdSpinBox"/>
+          </item>
+          <item row="3" column="0">
+           <widget class="QLabel" name="label_2">
+            <property name="text">
+             <string>Уровень тишины</string>
+            </property>
+            <property name="alignment">
+             <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+            </property>
+           </widget>
+          </item>
+          <item row="3" column="1">
+           <widget class="QSpinBox" name="quietThresholdSpinBox"/>
+          </item>
+          <item row="4" column="0">
+           <widget class="QLabel" name="label_3">
+            <property name="text">
+             <string>Таймаут звука</string>
+            </property>
+            <property name="alignment">
+             <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+            </property>
+           </widget>
+          </item>
+          <item row="5" column="0">
+           <widget class="QLabel" name="label_4">
+            <property name="text">
+             <string>Таймаут тишины</string>
+            </property>
+            <property name="alignment">
+             <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+            </property>
+           </widget>
+          </item>
+          <item row="6" column="1">
+           <widget class="QPushButton" name="setCommutParamsButton">
+            <property name="text">
+             <string>Установить параметры</string>
+            </property>
+           </widget>
+          </item>
+          <item row="4" column="1">
+           <widget class="QSpinBox" name="loudTimeoutSpinBox"/>
+          </item>
+          <item row="5" column="1">
+           <widget class="QSpinBox" name="quietTimeoutSpinBox">
+            <property name="maximum">
+             <number>99</number>
+            </property>
+           </widget>
+          </item>
+         </layout>
         </widget>
        </item>
-       <item row="1" column="1">
-        <widget class="QLineEdit" name="soundThresholdLineEdit"/>
-       </item>
-       <item row="4" column="0">
-        <widget class="QLabel" name="label_2">
-         <property name="text">
-          <string>Нижняя граница</string>
+       <item>
+        <widget class="QGroupBox" name="groupBox_2">
+         <property name="title">
+          <string>Параметры соединения</string>
          </property>
-        </widget>
-       </item>
-       <item row="4" column="1">
-        <widget class="QLineEdit" name="quietThresholdLineEdit"/>
-       </item>
-       <item row="5" column="1">
-        <widget class="QPushButton" name="setParamsButton">
-         <property name="text">
-          <string>Установить параметры</string>
-         </property>
+         <layout class="QFormLayout" name="formLayout_2">
+          <property name="labelAlignment">
+           <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+          </property>
+          <item row="4" column="1">
+           <widget class="QPushButton" name="setNetworkParamsButton">
+            <property name="text">
+             <string>Установить параметры</string>
+            </property>
+           </widget>
+          </item>
+          <item row="0" column="0">
+           <widget class="QLabel" name="label_5">
+            <property name="text">
+             <string>IP</string>
+            </property>
+           </widget>
+          </item>
+          <item row="1" column="0">
+           <widget class="QLabel" name="label_6">
+            <property name="text">
+             <string>Порт</string>
+            </property>
+           </widget>
+          </item>
+          <item row="2" column="0">
+           <widget class="QLabel" name="label_7">
+            <property name="text">
+             <string>Маска подсети</string>
+            </property>
+           </widget>
+          </item>
+          <item row="3" column="0">
+           <widget class="QLabel" name="label_8">
+            <property name="text">
+             <string>Шлюз</string>
+            </property>
+           </widget>
+          </item>
+          <item row="0" column="1">
+           <widget class="QLineEdit" name="newIpLineEdit"/>
+          </item>
+          <item row="2" column="1">
+           <widget class="QLineEdit" name="netmaskLineEdit"/>
+          </item>
+          <item row="3" column="1">
+           <widget class="QLineEdit" name="gateLineEdit"/>
+          </item>
+          <item row="1" column="1">
+           <widget class="QSpinBox" name="newPortSpinBox"/>
+          </item>
+         </layout>
         </widget>
        </item>
       </layout>

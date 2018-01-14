@@ -4,8 +4,9 @@
 #include <QString>
 #include <map>
 
-enum REQUEST_CODE{SET_AUTO, SET_PRIM, SET_SCND, GET_STATE,
-            SET_SOUND_THR, SET_LOUD_THR, GET_SOUND_THR, GET_LOUD_THR};
+enum REQUEST_CODE{SET_AUTO, SET_PRIM, SET_SCND, STATE,
+                  LOUD_THR, QUIET_THR, LOUD_TIMEOUT, QUIET_TIMEOUT,
+                  SET_IP, SET_PORT};
 
 
 class Request
@@ -14,21 +15,21 @@ class Request
     QString cmd;
     QString answ;
 
-    bool isQuery;
-
     std::map<REQUEST_CODE, QString> COMMANDS = {
         {SET_AUTO, "AUTO"},
         {SET_PRIM, "PRIM"},
         {SET_SCND, "SCND"},
-        {GET_STATE, "STAT"},
-        {SET_SOUND_THR, "STAT"},
-        {SET_LOUD_THR, "STAT"},
-        {GET_SOUND_THR, "STAT"},
-        {GET_LOUD_THR, "STAT"}
+        {STATE, "STAT"},
+        {LOUD_THR, "LTHR"},
+        {QUIET_THR, "QTHR"},
+        {LOUD_TIMEOUT, "LTIM"},
+        {QUIET_TIMEOUT, "QTIM"},
+        {SET_IP, "ADDR"},
+        {SET_PORT, "PORT"}
     };
 
 public:
-    Request(REQUEST_CODE requestCode, bool isQuery=false);
+    Request(REQUEST_CODE requestCode);
     void setParameter(int param);
     void setAnswer(QString answer);
     QString getCmd();

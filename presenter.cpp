@@ -46,7 +46,7 @@ void Presenter::connectAvarkomSignals(){
 
 void Presenter::handleExecutedRequest(Request *executedRequest){
     switch (executedRequest->getCode()) {
-    case REQUEST_CODE::GET_STATE:
+    case REQUEST_CODE::STATE:
         updateState(executedRequest->getAnswer());
         break;
     default:
@@ -62,7 +62,7 @@ void Presenter::reportError(QString error){
 }
 
 void Presenter::requestState(){
-    Request* stateRequest = new Request(REQUEST_CODE::GET_STATE);
+    Request* stateRequest = new Request(REQUEST_CODE::STATE);
     avarkomPMS->processRequest(stateRequest);
 }
 
