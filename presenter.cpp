@@ -27,9 +27,12 @@ void Presenter::connectViewSignals(){
                      this, SLOT(makeConnecton()));
     QObject::connect(view, SIGNAL(disconnectionRequest()),
                      this, SLOT(makeDisconnecton()));
-
     QObject::connect(view, SIGNAL(changeStateRequest(QString)),
                      this, SLOT(changeDeviceState(QString)));
+    QObject::connect(view, SIGNAL(updateSetpoints()),
+                     this, SLOT(updateDeviceSetpoints()));
+    QObject::connect(view, SIGNAL(updateNetworkSettings()),
+                     this, SLOT(updateDeviceNetworkSettings()));
 }
 
 void Presenter::connectAvarkomSignals(){
@@ -38,16 +41,16 @@ void Presenter::connectAvarkomSignals(){
     QObject::connect(avarkomPMS, SIGNAL(disconnected()),
                      this, SLOT(indicateDisconnection()));
 
-    QObject::connect(avarkomPMS, SIGNAL(requestProcessingFinished(Request *)),
-                     this, SLOT(handleExecutedRequest(Request *)));
+    QObject::connect(avarkomPMS, SIGNAL(requestProcessingFinished(Command *)),
+                     this, SLOT(handleExecutedRequest(Command *)));
     QObject::connect(avarkomPMS, SIGNAL(errorReport(QString)),
                      this, SLOT(reportError(QString)));
 }
 
-void Presenter::handleExecutedRequest(Request *executedRequest){
+void Presenter::handleExecutedRequest(Command *executedRequest){
     switch (executedRequest->getCode()) {
-    case REQUEST_CODE::STATE:
-        updateState(executedRequest->getAnswer());
+    case COMMAND_CODE::STATE:
+        updateViewState(executedRequest->getAnswer());
         break;
     default:
         qDebug() << "Received not state response";
@@ -62,28 +65,47 @@ void Presenter::reportError(QString error){
 }
 
 void Presenter::requestState(){
-    Request* stateRequest = new Request(REQUEST_CODE::STATE);
-    avarkomPMS->processRequest(stateRequest);
+    // Command* stateRequest = new Command(COMMAND_CODE::STATE);
+    // avarkomPMS->processRequest(stateRequest);
 }
 
 void Presenter::changeDeviceState(QString newState){
-    REQUEST_CODE newStateCode;
+    COMMAND_CODE newStateCode;
 
     if (newState == "auto"){
-        newStateCode = REQUEST_CODE::SET_AUTO;
+        newStateCode = COMMAND_CODE::SET_AUTO;
     }
     else if (newState == "prim"){
-        newStateCode = REQUEST_CODE::SET_PRIM;
+        newStateCode = COMMAND_CODE::SET_PRIM;
     }
     else if (newState == "scnd"){
-        newStateCode = REQUEST_CODE::SET_SCND;
+        newStateCode = COMMAND_CODE::SET_SCND;
     }
     else{
         return;
     }
 
-    Request* stateRequest = new Request(newStateCode);
-    avarkomPMS->processRequest(stateRequest);
+    Command* stateRequest = new Command(newStateCode);
+    avarkomPMS->processNewCommand(stateRequest);
+}
+
+void Presenter::updateDeviceSetpoints(){
+    // TODO: add all other parameters here!
+    Command* loudTreshold = new Command(COMMAND_CODE::LOUD_THR,
+                                        view->getLoudThreshold());
+    avarkomPMS->processNewCommand(loudTreshold);
+}
+
+void Presenter::updateDeviceNetworkSettings(){
+    // TODO: add all other parameters here!
+    Command* newIp = new Command(COMMAND_CODE::IP_ADDR,
+                                 view->getNewAddressString());
+
+    Command* newPort = new Command(COMMAND_CODE::PORT,
+                                   view->getNewPort());
+
+    avarkomPMS->processNewCommand(newIp);
+    avarkomPMS->processNewCommand(newPort);
 }
 
 void Presenter::makeConnecton(){
@@ -107,7 +129,7 @@ void Presenter::indicateDisconnection(){
     view->changeToDisconnectedMode();
 }
 
-void Presenter::updateState(QString deviceAnswer){
+void Presenter::updateViewState(QString deviceAnswer){
     if (responseParser->parseState(deviceAnswer)){
         view->setState(responseParser->getState());
 
@@ -120,3 +142,4 @@ void Presenter::updateState(QString deviceAnswer){
         view->setErrorText("Неинтерпретируемый ответ устройства");
     }
 }
+

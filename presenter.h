@@ -5,7 +5,7 @@
 #include "avarkom.h"
 #include "parser.h"
 #include "mainwindow.h"
-#include "request.h"
+#include "command.h"
 
 class Presenter: public QObject
 {
@@ -20,7 +20,7 @@ class Presenter: public QObject
     void connectViewSignals();
     void connectAvarkomSignals();
 
-    void updateState(QString deviceAnswer);
+    void updateViewState(QString deviceAnswer);
 
 public:
     Presenter(Avarkom *device, Parser *parser, MainWindow *UIView, int updateTime);
@@ -31,9 +31,11 @@ public slots:
     void makeDisconnecton();
 
     void requestState();
-    void handleExecutedRequest(Request* executedRequest);
+    void handleExecutedRequest(Command* executedRequest);
     void reportError(QString error);
     void changeDeviceState(QString newState);
+    void updateDeviceSetpoints();
+    void updateDeviceNetworkSettings();
 
     void indicateConnection();
     void indicateDisconnection();

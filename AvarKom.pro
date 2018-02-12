@@ -20,12 +20,12 @@ SOURCES += main.cpp\
     parser.cpp \
     presenter.cpp \
     avarkom.cpp \
-    request.cpp
+    command.cpp
 
 HEADERS  += mainwindow.h \
     parser.h \
     presenter.h \
     avarkom.h \
-    request.h
+    command.h
 
 FORMS    += mainwindow.ui

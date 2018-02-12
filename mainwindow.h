@@ -16,14 +16,19 @@ class MainWindow : public QMainWindow
     QString passiveStyleSheet;
 
 private slots:
-    void emitConnectionSignal()    {emit connectionRequest();}
-    void emitDisconnectionSignal() {emit disconnectionRequest();}
+    void emitConnectionSignal()      {emit connectionRequest();}
+    void emitDisconnectionSignal()   {emit disconnectionRequest();}
+    void emitUpdateSetpointsSignal() {emit updateSetpoints();}
+    void emitUpdateNetworkSignal()   {emit updateNetworkSettings();}
 
     void emitChangeStateSignal();
 
 public:
     explicit MainWindow(QWidget *parent = 0);
     ~MainWindow();
+
+    QString getAddressString();
+    qint16 getPort();
 
     void changeToConnetedMode();
     void changeToDisconnectedMode();
@@ -35,8 +40,10 @@ public:
     void set2SourceRightLevel(int level);
     void setErrorText(QString errorText);
 
-    QString getAddressString();
-    qint16 getPort();
+    int getLoudThreshold();
+
+    QString getNewAddressString();
+    int getNewPort();
 
 
 signals:
@@ -44,6 +51,8 @@ signals:
     void disconnectionRequest();
 
     void changeStateRequest(QString newState);
+    void updateSetpoints();
+    void updateNetworkSettings();
     void stateRequest();
 };
 

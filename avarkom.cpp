@@ -41,10 +41,13 @@ void Avarkom::receiveResponse(){
         emit requestProcessingFinished(currentRequest);
         inBuffer = "";
         processingRequest = false;
+        processNextCommand();
     }
 }
 
 void Avarkom::onError(QAbstractSocket::SocketError error){
+    qDebug() << "error cpde: ";
+    qDebug() << error;
     emit errorReport("Error!");
 }
 
@@ -54,19 +57,19 @@ void Avarkom::sendCommand(QString command){
 }
 
 
-void Avarkom::processRequest(Request *newReq){
-    requestsQueue.append(newReq);
+void Avarkom::processNewCommand(Command *newCmd){
+    requestsQueue.append(newCmd);
 
     if (processingRequest){
         return;
     }
     else{
-        processNextRequest();
+        processNextCommand();
     }
 }
 
 
-void Avarkom::processNextRequest(){
+void Avarkom::processNextCommand(){
     if (requestsQueue.isEmpty() || processingRequest){
         return;
     }

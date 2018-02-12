@@ -19,6 +19,10 @@ MainWindow::MainWindow(QWidget *parent) :
                      this, SLOT(emitChangeStateSignal()));
     QObject::connect(ui->source2Button, SIGNAL(clicked()),
                      this, SLOT(emitChangeStateSignal()));
+    QObject::connect(ui->setCommutParamsButton, SIGNAL(clicked()),
+                     this, SLOT(emitUpdateSetpointsSignal()));
+    QObject::connect(ui->setNetworkParamsButton, SIGNAL(clicked()),
+                     this, SLOT(emitUpdateNetworkSignal()));
 
     activeStyleSheet = "background-color: #3cbaa2;";
     passiveStyleSheet = "";
@@ -29,7 +33,6 @@ MainWindow::MainWindow(QWidget *parent) :
 MainWindow::~MainWindow(){
     delete ui;
 }
-
 
 QString MainWindow::getAddressString(){
     return ui->ipLineEdit->text();
@@ -108,4 +111,16 @@ void MainWindow::set2SourceRightLevel(int level){
 
 void MainWindow::setErrorText(QString errorText){
     ui->connStateLabel->setText(errorText);
+}
+
+int MainWindow::getLoudThreshold(){
+    return ui->loudThresholdSpinBox->value();
+}
+
+QString MainWindow::getNewAddressString(){
+    return ui->newIpLineEdit->text();
+}
+
+int MainWindow::getNewPort(){
+    return ui->newPortSpinBox->value();
 }

@@ -5,19 +5,19 @@
 #include "QString"
 #include "QTcpSocket"
 #include "QHostAddress"
-#include "request.h"
+#include "command.h"
 
 class Avarkom: public QObject
 {
         Q_OBJECT
 
     QTcpSocket *_sock;
-    Request* currentRequest;
+    Command* currentRequest;
     void sendCommand(QString command);
     QString inBuffer;
 
     bool processingRequest;
-    QQueue<Request*> requestsQueue;
+    QQueue<Command*> requestsQueue;
 
 private slots:
     void onConnected()      {emit connected();}
@@ -30,8 +30,8 @@ public:
     Avarkom();
     ~Avarkom();
 
-    void processRequest(Request* newReq);
-    void processNextRequest();
+    void processNewCommand(Command* newCmd);
+    void processNextCommand();
 
     void connect(QHostAddress addr, qint16 port);
     void disconnect();
@@ -39,7 +39,7 @@ public:
 signals:
     void connected();
     void disconnected();
-    void requestProcessingFinished(Request* req);
+    void requestProcessingFinished(Command* req);
     void errorReport(QString errorText);
 };
 

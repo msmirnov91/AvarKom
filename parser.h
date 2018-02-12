@@ -2,7 +2,7 @@
 #define PARSER_H
 
 #include "QString"
-#include "request.h"
+#include "command.h"
 
 class Parser
 {

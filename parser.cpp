@@ -28,9 +28,11 @@ bool Parser::parseState(QString deviceAnswer){
         state = "scnd";
     }
 
+    /* commented for correct work with new device firmware
     if (stateCode < 0 || stateCode > 1){
         return false;
     }
+    */
 
     if (source < 0 || source > 1){
         return false;
