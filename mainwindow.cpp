@@ -8,9 +8,9 @@ MainWindow::MainWindow(QWidget *parent) :
 
     // connect/disconnect signals
     QObject::connect(ui->connectButton, SIGNAL(clicked()),
-                     this, SLOT(emitConnectionSignal()));
+                     this, SIGNAL(connectionRequest()));
     QObject::connect(ui->disconnectButton, SIGNAL(clicked()),
-                     this, SLOT(emitDisconnectionSignal()));
+                     this, SIGNAL(disconnectionRequest()));
 
     // control signals
     QObject::connect(ui->autoButton, SIGNAL(clicked()),
@@ -20,9 +20,9 @@ MainWindow::MainWindow(QWidget *parent) :
     QObject::connect(ui->source2Button, SIGNAL(clicked()),
                      this, SLOT(emitChangeStateSignal()));
     QObject::connect(ui->setCommutParamsButton, SIGNAL(clicked()),
-                     this, SLOT(emitUpdateSetpointsSignal()));
+                     this, SIGNAL(updateSetpoints()));
     QObject::connect(ui->setNetworkParamsButton, SIGNAL(clicked()),
-                     this, SLOT(emitUpdateNetworkSignal()));
+                     this, SIGNAL(updateNetworkSettings()));
 
     activeStyleSheet = "background-color: #3cbaa2;";
     passiveStyleSheet = "";
@@ -55,7 +55,7 @@ void MainWindow::emitChangeStateSignal(){
 }
 
 void MainWindow::changeToConnetedMode(){
-    ui->stateSelectGB->setEnabled(true);
+    ui->deviceControlGB->setEnabled(true);
     ui->indication1GB->setEnabled(true);
     ui->indication2GB->setEnabled(true);
 
@@ -69,7 +69,7 @@ void MainWindow::changeToDisconnectedMode(){
     ui->source1Button->setStyleSheet(passiveStyleSheet);
     ui->source2Button->setStyleSheet(passiveStyleSheet);
 
-    ui->stateSelectGB->setEnabled(false);
+    ui->deviceControlGB->setEnabled(false);
     ui->indication1GB->setEnabled(false);
     ui->indication2GB->setEnabled(false);
 
@@ -113,8 +113,21 @@ void MainWindow::setErrorText(QString errorText){
     ui->connStateLabel->setText(errorText);
 }
 
+
 int MainWindow::getLoudThreshold(){
     return ui->loudThresholdSpinBox->value();
+}
+
+int MainWindow::getQuietThreshold(){
+    return ui->quietThresholdSpinBox->value();
+}
+
+int MainWindow::getLoudTimeout(){
+    return ui->loudTimeoutSpinBox->value();
+}
+
+int MainWindow::getQuietTimeout(){
+    return ui->quietTimeoutSpinBox->value();
 }
 
 QString MainWindow::getNewAddressString(){
@@ -123,4 +136,12 @@ QString MainWindow::getNewAddressString(){
 
 int MainWindow::getNewPort(){
     return ui->newPortSpinBox->value();
+}
+
+QString MainWindow::getNetmask(){
+    return ui->netmaskLineEdit->text();
+}
+
+QString MainWindow::getGateway(){
+    return ui->gateLineEdit->text();
 }

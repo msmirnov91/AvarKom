@@ -16,10 +16,10 @@ class MainWindow : public QMainWindow
     QString passiveStyleSheet;
 
 private slots:
-    void emitConnectionSignal()      {emit connectionRequest();}
+    /*void emitConnectionSignal()      {emit connectionRequest();}
     void emitDisconnectionSignal()   {emit disconnectionRequest();}
     void emitUpdateSetpointsSignal() {emit updateSetpoints();}
-    void emitUpdateNetworkSignal()   {emit updateNetworkSettings();}
+    void emitUpdateNetworkSignal()   {emit updateNetworkSettings();}*/
 
     void emitChangeStateSignal();
 
@@ -41,9 +41,14 @@ public:
     void setErrorText(QString errorText);
 
     int getLoudThreshold();
+    int getQuietThreshold();
+    int getLoudTimeout();
+    int getQuietTimeout();
 
     QString getNewAddressString();
     int getNewPort();
+    QString getNetmask();
+    QString getGateway();
 
 
 signals:

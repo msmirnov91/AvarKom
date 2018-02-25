@@ -198,7 +198,7 @@
      </widget>
     </item>
     <item row="1" column="0" colspan="2">
-     <widget class="QGroupBox" name="stateSelectGB">
+     <widget class="QGroupBox" name="deviceControlGB">
       <property name="enabled">
        <bool>true</bool>
       </property>
@@ -209,19 +209,9 @@
        </size>
       </property>
       <property name="title">
-       <string>Выбор режима</string>
+       <string>Управление устройством</string>
       </property>
       <layout class="QGridLayout" name="gridLayout_2">
-       <item row="0" column="0">
-        <widget class="QPushButton" name="autoButton">
-         <property name="enabled">
-          <bool>true</bool>
-         </property>
-         <property name="text">
-          <string>Авто</string>
-         </property>
-        </widget>
-       </item>
        <item row="0" column="1">
         <widget class="QPushButton" name="source1Button">
          <property name="enabled">
@@ -232,6 +222,16 @@
          </property>
         </widget>
        </item>
+       <item row="0" column="0">
+        <widget class="QPushButton" name="autoButton">
+         <property name="enabled">
+          <bool>true</bool>
+         </property>
+         <property name="text">
+          <string>Авто</string>
+         </property>
+        </widget>
+       </item>
        <item row="0" column="2">
         <widget class="QPushButton" name="source2Button">
          <property name="enabled">
@@ -239,6 +239,13 @@
          </property>
          <property name="text">
           <string>Источник 2</string>
+         </property>
+        </widget>
+       </item>
+       <item row="0" column="3">
+        <widget class="QPushButton" name="relayButton">
+         <property name="text">
+          <string>Реле</string>
          </property>
         </widget>
        </item>

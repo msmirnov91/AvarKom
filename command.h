@@ -4,12 +4,19 @@
 #include <QString>
 #include <map>
 
-enum COMMAND_CODE{SET_PRIM, SET_SCND,
-                  SET_AUTO, STATE,
-                  LOUD_THR, QUIET_THR,
-                  LOUD_TIMEOUT, QUIET_TIMEOUT,
-                  IP_ADDR, PORT, NETMASK,
-                  GATEWAY};
+enum COMMAND_CODE{SET_PRIM,
+                  SET_SCND,
+                  SET_AUTO,
+                  STATE,
+                  LOUD_THR,
+                  QUIET_THR,
+                  LOUD_TIMEOUT,
+                  QUIET_TIMEOUT,
+                  IP_ADDR,
+                  PORT,
+                  NETMASK,
+                  GATEWAY,
+                  RELAY};
 
 
 class Command
@@ -30,7 +37,8 @@ class Command
         {IP_ADDR, "ADDR"},
         {PORT, "PORT"},
         {NETMASK, "MASK"},
-        {GATEWAY, "GATE"}
+        {GATEWAY, "GATE"},
+        {RELAY, "RLAY"}
     };
 
 public:

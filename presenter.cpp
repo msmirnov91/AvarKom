@@ -40,7 +40,6 @@ void Presenter::connectAvarkomSignals(){
                      this, SLOT(indicateConnection()));
     QObject::connect(avarkomPMS, SIGNAL(disconnected()),
                      this, SLOT(indicateDisconnection()));
-
     QObject::connect(avarkomPMS, SIGNAL(requestProcessingFinished(Command *)),
                      this, SLOT(handleExecutedRequest(Command *)));
     QObject::connect(avarkomPMS, SIGNAL(errorReport(QString)),
@@ -49,11 +48,35 @@ void Presenter::connectAvarkomSignals(){
 
 void Presenter::handleExecutedRequest(Command *executedRequest){
     switch (executedRequest->getCode()) {
+    case COMMAND_CODE::SET_PRIM:
+        break;
+    case COMMAND_CODE::SET_SCND:
+        break;
+    case COMMAND_CODE::SET_AUTO:
+        break;
     case COMMAND_CODE::STATE:
         updateViewState(executedRequest->getAnswer());
         break;
+    case COMMAND_CODE::LOUD_THR:
+        break;
+    case COMMAND_CODE::QUIET_THR:
+        break;
+    case COMMAND_CODE::LOUD_TIMEOUT:
+        break;
+    case COMMAND_CODE::QUIET_TIMEOUT:
+        break;
+    case COMMAND_CODE::IP_ADDR:
+        break;
+    case COMMAND_CODE::PORT:
+        break;
+    case COMMAND_CODE::NETMASK:
+        break;
+    case COMMAND_CODE::GATEWAY:
+        break;
+    case COMMAND_CODE::RELAY:
+        break;
     default:
-        qDebug() << "Received not state response";
+        qDebug() << "Unknown command code";
         break;
     }
 
@@ -90,22 +113,25 @@ void Presenter::changeDeviceState(QString newState){
 }
 
 void Presenter::updateDeviceSetpoints(){
-    // TODO: add all other parameters here!
-    Command* loudTreshold = new Command(COMMAND_CODE::LOUD_THR,
-                                        view->getLoudThreshold());
-    avarkomPMS->processNewCommand(loudTreshold);
+    avarkomPMS->processNewCommand(new Command(COMMAND_CODE::LOUD_THR,
+                                              view->getLoudThreshold()));
+    avarkomPMS->processNewCommand(new Command(COMMAND_CODE::QUIET_THR,
+                                              view->getQuietThreshold()));
+    avarkomPMS->processNewCommand(new Command(COMMAND_CODE::LOUD_TIMEOUT,
+                                              view->getLoudTimeout()));
+    avarkomPMS->processNewCommand(new Command(COMMAND_CODE::QUIET_TIMEOUT,
+                                              view->getQuietTimeout()));
 }
 
 void Presenter::updateDeviceNetworkSettings(){
-    // TODO: add all other parameters here!
-    Command* newIp = new Command(COMMAND_CODE::IP_ADDR,
-                                 view->getNewAddressString());
-
-    Command* newPort = new Command(COMMAND_CODE::PORT,
-                                   view->getNewPort());
-
-    avarkomPMS->processNewCommand(newIp);
-    avarkomPMS->processNewCommand(newPort);
+    avarkomPMS->processNewCommand(new Command(COMMAND_CODE::IP_ADDR,
+                                              view->getNewAddressString()));
+    avarkomPMS->processNewCommand(new Command(COMMAND_CODE::PORT,
+                                              view->getNewPort()));
+    avarkomPMS->processNewCommand(new Command(COMMAND_CODE::NETMASK,
+                                              view->getNetmask()));
+    avarkomPMS->processNewCommand(new Command(COMMAND_CODE::GATEWAY,
+                                              view->getGateway()));
 }
 
 void Presenter::makeConnecton(){
