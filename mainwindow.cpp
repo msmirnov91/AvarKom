@@ -13,6 +13,8 @@ MainWindow::MainWindow(QWidget *parent) :
                      this, SIGNAL(disconnectionRequest()));
     QObject::connect(ui->dhcpCB, SIGNAL(toggled(bool)),
                      this, SLOT(enableIpString(bool)));
+    QObject::connect(ui->pollingTimeSlider, SIGNAL(valueChanged(int)),
+                     this, SLOT(emitPollingTimeChanged(int)));
 
     // control signals
     QObject::connect(ui->autoButton, SIGNAL(clicked()),
@@ -35,6 +37,9 @@ MainWindow::MainWindow(QWidget *parent) :
     int port = storedConnectionParams.value("PORT", 90).toInt();
     ui->ipLineEdit->setText(addr);
     ui->portSpinBox->setValue(port);
+
+    int pollingTime = storedConnectionParams.value("POLLINGTIME", 5000).toInt();
+    ui->pollingTimeSlider->setValue(pollingTime);
 
     changeToDisconnectedMode();
 }
@@ -87,6 +92,11 @@ void MainWindow::emitChangeSetpoints(){
     emit updateSetpoints(setpoints);
 }
 
+void MainWindow::emitPollingTimeChanged(int time){
+    storedConnectionParams.setValue("POLLINGTIME", time);
+    emit pollingTimeChanged(time);
+}
+
 void MainWindow::enableIpString(bool useDhcp){
     ui->newIpLineEdit->setEnabled(!useDhcp);
 }
@@ -95,8 +105,7 @@ void MainWindow::changeToConnetedMode(){
     ui->deviceControlGB->setEnabled(true);
     ui->indication1GB->setEnabled(true);
     ui->indication2GB->setEnabled(true);
-    ui->commutationParamGB->setEnabled(true);
-    ui->connectionParamGB->setEnabled(true);
+    ui->paramsGB->setEnabled(true);
 
     ui->connParamGB->setEnabled(false);
     setStatusText("Соединен");
@@ -110,8 +119,7 @@ void MainWindow::changeToDisconnectedMode(){
     ui->deviceControlGB->setEnabled(false);
     ui->indication1GB->setEnabled(false);
     ui->indication2GB->setEnabled(false);
-    ui->commutationParamGB->setEnabled(false);
-    ui->connectionParamGB->setEnabled(false);
+    ui->paramsGB->setEnabled(false);
 
     ui->connParamGB->setEnabled(true);
     setStatusText("Разъединен");
@@ -172,4 +180,8 @@ void MainWindow::setNetworkSettings(NetworkSettings settings){
 
 void MainWindow::setStatusText(QString statusText){
     ui->connStateLabel->setText(statusText);
+}
+
+int MainWindow::getPollingTime(){
+    return ui->pollingTimeSlider->value();
 }

@@ -15,6 +15,6 @@ int main(int argc, char *argv[])
 
     Avarkom dev;
     Parser pars;
-    Presenter p(&dev, &pars, &w, 5000);
+    Presenter p(&dev, &pars, &w);
     return a.exec();
 }

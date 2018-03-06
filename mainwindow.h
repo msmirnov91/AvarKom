@@ -49,6 +49,7 @@ private slots:
     void emitChangeSetpoints();
 
     void enableIpString(bool useDhcp);
+    void emitPollingTimeChanged(int time);
 
 public:
     explicit MainWindow(QWidget *parent = 0);
@@ -66,9 +67,12 @@ public:
     void setNetworkSettings(NetworkSettings storedConnectionParams);
     void setStatusText(QString statusText);
 
+    int getPollingTime();
+
 signals:
     void connectionRequest();
     void disconnectionRequest();
+    void pollingTimeChanged(int);
 
     void changeStateRequest(QString newState);
     void toggleRelay(bool);

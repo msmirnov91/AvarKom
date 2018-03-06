@@ -29,13 +29,14 @@ class Presenter: public QObject
     void requestAllParams();
 
 public:
-    Presenter(Avarkom *device, Parser *parser, MainWindow *UIView, int updateTime);
+    Presenter(Avarkom *device, Parser *parser, MainWindow *UIView);
     ~Presenter();
 
 public slots:
     void makeConnecton();
     void makeDisconnecton();
     void connectionTimeout();
+    void setPollingTime(int pollingTime);
 
     void requestState();
     void handleExecutedRequest(Command* executedRequest);

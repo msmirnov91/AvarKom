@@ -1,7 +1,6 @@
 #include "presenter.h"
 
-Presenter::Presenter(Avarkom *device, Parser *parser, MainWindow *UIView,
-                     int updateTime){
+Presenter::Presenter(Avarkom *device, Parser *parser, MainWindow *UIView){
     avarkomPMS = device;
     responseParser = parser;
     view = UIView;
@@ -10,7 +9,7 @@ Presenter::Presenter(Avarkom *device, Parser *parser, MainWindow *UIView,
     connectAvarkomSignals();
 
     pollingTimer = new QTimer();
-    pollingTimer->setInterval(updateTime);
+    setPollingTime(view->getPollingTime());
     watchDog = new QTimer();
     watchDog->setInterval(5000);  // 5 sec timeout for connection
 
@@ -36,6 +35,8 @@ void Presenter::connectViewSignals(){
                      this, SLOT(changeDeviceState(QString)));
     QObject::connect(view, SIGNAL(toggleRelay(bool)),
                      this, SLOT(toggleRelay(bool)));
+    QObject::connect(view, SIGNAL(pollingTimeChanged(int)),
+                     this, SLOT(setPollingTime(int)));
     QObject::connect(view, SIGNAL(updateSetpoints(Setpoints)),
                      this, SLOT(updateDeviceSetpoints(Setpoints)));
     QObject::connect(view, SIGNAL(updateNetworkSettings(NetworkSettings)),
@@ -104,8 +105,8 @@ void Presenter::reportError(QString error){
 }
 
 void Presenter::requestState(){
-    //Command* stateRequest = new Command(COMMAND_CODE::STATE);
-    //avarkomPMS->processNewCommand(stateRequest);
+    Command* stateRequest = new Command(COMMAND_CODE::STATE);
+    avarkomPMS->processNewCommand(stateRequest);
 }
 
 void Presenter::changeDeviceState(QString newState){
@@ -170,6 +171,11 @@ void Presenter::connectionTimeout(){
     view->changeToDisconnectedMode();
     watchDog->stop();
     reportError("Превышено время ожидания соединения");
+}
+
+void Presenter::setPollingTime(int pollingTime){
+    qDebug() << pollingTime;
+    pollingTimer->setInterval(pollingTime);
 }
 
 void Presenter::onConnect(){
