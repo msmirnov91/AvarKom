@@ -3,28 +3,16 @@
 
 #include "QString"
 #include "command.h"
+#include "mainwindow.h"
 
 class Parser
 {
-    int primSourceLeft;
-    int primSourceRight;
-    int scndSourceLeft;
-    int scndSourceRight;
-    int source;
-    QString state;
-
-    int getNormalizedValue(QString value);
+    static int getNormalizedValue(QString value);
 
 public:
     Parser(){}
-    bool parseState(QString deviceRequest);
-
-    QString getState(){return state;}
-    int getCurrentSource() {return source;}
-    int get1sourceLeftLevel() {return primSourceLeft;}
-    int get1sourceRightLevel(){return primSourceRight;}
-    int get2sourceLeftLevel() {return scndSourceLeft;}
-    int get2sourceRightLevel(){return scndSourceRight;}
+    static bool parseState(State& state, QString deviceAnswer);
+    static int parseInt(QString strInt);
 };
 
 #endif // PARSER_H

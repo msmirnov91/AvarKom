@@ -35,6 +35,7 @@ public:
 
     void connect(QHostAddress addr, qint16 port);
     void disconnect();
+    void abortConnection();
 
 signals:
     void connected();

@@ -14,12 +14,7 @@ Avarkom::Avarkom(){
 }
 
 Avarkom::~Avarkom(){
-    disconnect();
-
-    while (_sock->state() != QAbstractSocket::UnconnectedState){
-        ; // wait for socket disconnect
-    }
-
+    abortConnection();
     delete _sock;
 }
 
@@ -29,6 +24,10 @@ void Avarkom::connect(QHostAddress addr, qint16 port){
 
 void Avarkom::disconnect(){
     _sock->disconnectFromHost();
+}
+
+void Avarkom::abortConnection(){
+    _sock->abort();
 }
 
 void Avarkom::receiveResponse(){

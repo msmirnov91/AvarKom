@@ -11,6 +11,8 @@ MainWindow::MainWindow(QWidget *parent) :
                      this, SIGNAL(connectionRequest()));
     QObject::connect(ui->disconnectButton, SIGNAL(clicked()),
                      this, SIGNAL(disconnectionRequest()));
+    QObject::connect(ui->dhcpCB, SIGNAL(toggled(bool)),
+                     this, SLOT(enableIpString(bool)));
 
     // control signals
     QObject::connect(ui->autoButton, SIGNAL(clicked()),
@@ -19,13 +21,20 @@ MainWindow::MainWindow(QWidget *parent) :
                      this, SLOT(emitChangeStateSignal()));
     QObject::connect(ui->source2Button, SIGNAL(clicked()),
                      this, SLOT(emitChangeStateSignal()));
+    QObject::connect(ui->relayRB, SIGNAL(toggled(bool)),
+                     this, SIGNAL(toggleRelay(bool)));
     QObject::connect(ui->setCommutParamsButton, SIGNAL(clicked()),
-                     this, SIGNAL(updateSetpoints()));
+                     this, SLOT(emitChangeSetpoints()));
     QObject::connect(ui->setNetworkParamsButton, SIGNAL(clicked()),
-                     this, SIGNAL(updateNetworkSettings()));
+                     this, SLOT(emitChangeNetworkSettings()));
 
     activeStyleSheet = "background-color: #3cbaa2;";
     passiveStyleSheet = "";
+
+    QString addr = storedConnectionParams.value("IPADDR", "10.0.0.100").toString();
+    int port = storedConnectionParams.value("PORT", 90).toInt();
+    ui->ipLineEdit->setText(addr);
+    ui->portSpinBox->setValue(port);
 
     changeToDisconnectedMode();
 }
@@ -43,6 +52,7 @@ qint16 MainWindow::getPort(){
 }
 
 void MainWindow::emitChangeStateSignal(){
+    // TODO: fix this!!!
     if (QObject::sender() == ui->autoButton){
         emit changeStateRequest("auto");
     }
@@ -54,14 +64,42 @@ void MainWindow::emitChangeStateSignal(){
     }
 }
 
+void MainWindow::emitChangeNetworkSettings(){
+    NetworkSettings settings;
+
+    settings.useDhcp = int(ui->dhcpCB->isChecked());
+    settings.newAddressString = ui->newIpLineEdit->text().trimmed();
+    settings.newPort = ui->newPortSpinBox->value();
+    settings.netmask = ui->netmaskLineEdit->text().trimmed();
+    settings.gateway = ui->gateLineEdit->text().trimmed();
+
+    emit updateNetworkSettings(settings);
+}
+
+void MainWindow::emitChangeSetpoints(){
+    Setpoints setpoints;
+
+    setpoints.loudThreshold = ui->loudThresholdSpinBox->value();
+    setpoints.quietThreshold = ui->quietThresholdSpinBox->value();
+    setpoints.loudTimeout = ui->loudTimeoutSpinBox->value();
+    setpoints.quietTimeout = ui->quietTimeoutSpinBox->value();
+
+    emit updateSetpoints(setpoints);
+}
+
+void MainWindow::enableIpString(bool useDhcp){
+    ui->newIpLineEdit->setEnabled(!useDhcp);
+}
+
 void MainWindow::changeToConnetedMode(){
     ui->deviceControlGB->setEnabled(true);
     ui->indication1GB->setEnabled(true);
     ui->indication2GB->setEnabled(true);
+    ui->commutationParamGB->setEnabled(true);
+    ui->connectionParamGB->setEnabled(true);
 
     ui->connParamGB->setEnabled(false);
-    ui->connStateLabel->setText("Соединен");
-
+    setStatusText("Соединен");
 }
 
 void MainWindow::changeToDisconnectedMode(){
@@ -72,76 +110,66 @@ void MainWindow::changeToDisconnectedMode(){
     ui->deviceControlGB->setEnabled(false);
     ui->indication1GB->setEnabled(false);
     ui->indication2GB->setEnabled(false);
+    ui->commutationParamGB->setEnabled(false);
+    ui->connectionParamGB->setEnabled(false);
 
     ui->connParamGB->setEnabled(true);
-    ui->connStateLabel->setText("Разъединен");
+    setStatusText("Разъединен");
 }
 
-void MainWindow::setState(QString currentState){
+void MainWindow::changeToConnectionMode(){
+    changeToDisconnectedMode();
+    ui->connParamGB->setEnabled(false);
+    setStatusText("Соединение...");
+}
+
+void MainWindow::setState(State state){
+    ui->source1LevelLeft->setValue(state.fstSourceLeft);
+    ui->source1LevelRight->setValue(state.fstSourceRight);
+    ui->source2LevelLeft->setValue(state.sndSourceLeft);
+    ui->source2LevelRight->setValue(state.sndSourceRight);
+
     ui->autoButton->setStyleSheet(passiveStyleSheet);
     ui->source1Button->setStyleSheet(passiveStyleSheet);
     ui->source2Button->setStyleSheet(passiveStyleSheet);
 
-    if (currentState == "auto"){
-        ui->autoButton->setStyleSheet(activeStyleSheet);
+    switch (state.currSource){
+        case State::PRIM:
+            ui->source1Button->setStyleSheet(activeStyleSheet);
+            break;
+        case State::SCND:
+            ui->source2Button->setStyleSheet(activeStyleSheet);
+            break;
+        case State::AUTO:
+            ui->autoButton->setStyleSheet(activeStyleSheet);
+            break;
+
     }
-    else if(currentState == "prim"){
-        ui->source1Button->setStyleSheet(activeStyleSheet);
-    }
-    else if(currentState == "scnd"){
-        ui->source2Button->setStyleSheet(activeStyleSheet);
-    }
+
+    ui->relayRB->setChecked(bool(state.relayState));
+    setStatusText("Соединен");
 }
 
-void MainWindow::set1SourceLeftLevel(int level){
-    ui->source1LevelLeft->setValue(level);
+void MainWindow::setSetpoints(Setpoints setpoints){
+     ui->loudThresholdSpinBox->setValue(setpoints.loudThreshold);
+     ui->quietThresholdSpinBox->setValue(setpoints.quietThreshold);
+     ui->loudTimeoutSpinBox->setValue(setpoints.loudTimeout);
+     ui->quietTimeoutSpinBox->setValue(setpoints.quietTimeout);
+     setStatusText("Новые параметры коммутации установлены");
 }
 
-void MainWindow::set1SourceRightLevel(int level){
-    ui->source1LevelRight->setValue(level);
+void MainWindow::setNetworkSettings(NetworkSettings settings){
+    ui->dhcpCB->setChecked(settings.useDhcp);
+    ui->newIpLineEdit->setText(settings.newAddressString);
+    ui->newPortSpinBox->setValue(settings.newPort);
+    ui->netmaskLineEdit->setText(settings.netmask);
+    ui->gateLineEdit->setText(settings.gateway);
+    setStatusText("Новые параметры соединения установлены");
+
+    storedConnectionParams.setValue("IPADDR", settings.newAddressString);
+    storedConnectionParams.setValue("PORT", settings.newPort);
 }
 
-void MainWindow::set2SourceLeftLevel(int level){
-    ui->source2LevelLeft->setValue(level);
-}
-
-void MainWindow::set2SourceRightLevel(int level){
-    ui->source2LevelRight->setValue(level);
-}
-
-void MainWindow::setErrorText(QString errorText){
-    ui->connStateLabel->setText(errorText);
-}
-
-
-int MainWindow::getLoudThreshold(){
-    return ui->loudThresholdSpinBox->value();
-}
-
-int MainWindow::getQuietThreshold(){
-    return ui->quietThresholdSpinBox->value();
-}
-
-int MainWindow::getLoudTimeout(){
-    return ui->loudTimeoutSpinBox->value();
-}
-
-int MainWindow::getQuietTimeout(){
-    return ui->quietTimeoutSpinBox->value();
-}
-
-QString MainWindow::getNewAddressString(){
-    return ui->newIpLineEdit->text();
-}
-
-int MainWindow::getNewPort(){
-    return ui->newPortSpinBox->value();
-}
-
-QString MainWindow::getNetmask(){
-    return ui->netmaskLineEdit->text();
-}
-
-QString MainWindow::getGateway(){
-    return ui->gateLineEdit->text();
+void MainWindow::setStatusText(QString statusText){
+    ui->connStateLabel->setText(statusText);
 }

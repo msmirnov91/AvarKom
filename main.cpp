@@ -7,8 +7,12 @@
 int main(int argc, char *argv[])
 {
     QApplication a(argc, argv);
+
+    QApplication::setOrganizationName("PMS");
+    QApplication::setApplicationName("AvarkomPMS");
+
     MainWindow w;
-    //w.show();
+
     Avarkom dev;
     Parser pars;
     Presenter p(&dev, &pars, &w, 5000);

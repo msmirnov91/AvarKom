@@ -12,15 +12,21 @@ class Presenter: public QObject
     Q_OBJECT
 
     QTimer *pollingTimer;
-    int pollingTime;
+    QTimer *watchDog;
+
     Avarkom *avarkomPMS;
     Parser *responseParser;
     MainWindow *view;
+
+    State currentAvarkomState;
+    Setpoints currentSetpoints;
+    NetworkSettings currentNetworkSettings;
 
     void connectViewSignals();
     void connectAvarkomSignals();
 
     void updateViewState(QString deviceAnswer);
+    void requestAllParams();
 
 public:
     Presenter(Avarkom *device, Parser *parser, MainWindow *UIView, int updateTime);
@@ -29,16 +35,18 @@ public:
 public slots:
     void makeConnecton();
     void makeDisconnecton();
+    void connectionTimeout();
 
     void requestState();
     void handleExecutedRequest(Command* executedRequest);
     void reportError(QString error);
     void changeDeviceState(QString newState);
-    void updateDeviceSetpoints();
-    void updateDeviceNetworkSettings();
+    void toggleRelay(bool state);
+    void updateDeviceSetpoints(Setpoints setpoints);
+    void updateDeviceNetworkSettings(NetworkSettings settings);
 
-    void indicateConnection();
-    void indicateDisconnection();
+    void onConnect();
+    void onDisconnect();
 };
 
 #endif // PRESENTER_H

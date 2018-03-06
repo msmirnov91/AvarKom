@@ -10,8 +10,13 @@ Presenter::Presenter(Avarkom *device, Parser *parser, MainWindow *UIView,
     connectAvarkomSignals();
 
     pollingTimer = new QTimer();
+    pollingTimer->setInterval(updateTime);
+    watchDog = new QTimer();
+    watchDog->setInterval(5000);  // 5 sec timeout for connection
+
     connect(pollingTimer, SIGNAL(timeout()), this, SLOT(requestState()));
-    pollingTime = updateTime;
+    connect(watchDog, SIGNAL(timeout()), this, SLOT(connectionTimeout()));
+
     view->show();
 
 }
@@ -29,17 +34,19 @@ void Presenter::connectViewSignals(){
                      this, SLOT(makeDisconnecton()));
     QObject::connect(view, SIGNAL(changeStateRequest(QString)),
                      this, SLOT(changeDeviceState(QString)));
-    QObject::connect(view, SIGNAL(updateSetpoints()),
-                     this, SLOT(updateDeviceSetpoints()));
-    QObject::connect(view, SIGNAL(updateNetworkSettings()),
-                     this, SLOT(updateDeviceNetworkSettings()));
+    QObject::connect(view, SIGNAL(toggleRelay(bool)),
+                     this, SLOT(toggleRelay(bool)));
+    QObject::connect(view, SIGNAL(updateSetpoints(Setpoints)),
+                     this, SLOT(updateDeviceSetpoints(Setpoints)));
+    QObject::connect(view, SIGNAL(updateNetworkSettings(NetworkSettings)),
+                     this, SLOT(updateDeviceNetworkSettings(NetworkSettings)));
 }
 
 void Presenter::connectAvarkomSignals(){
     QObject::connect(avarkomPMS, SIGNAL(connected()),
-                     this, SLOT(indicateConnection()));
+                     this, SLOT(onConnect()));
     QObject::connect(avarkomPMS, SIGNAL(disconnected()),
-                     this, SLOT(indicateDisconnection()));
+                     this, SLOT(onDisconnect()));
     QObject::connect(avarkomPMS, SIGNAL(requestProcessingFinished(Command *)),
                      this, SLOT(handleExecutedRequest(Command *)));
     QObject::connect(avarkomPMS, SIGNAL(errorReport(QString)),
@@ -47,36 +54,45 @@ void Presenter::connectAvarkomSignals(){
 }
 
 void Presenter::handleExecutedRequest(Command *executedRequest){
+    // TODO: MUCH better would be fetching all
+    // network settings and setpoints with one command
+    // like status
     switch (executedRequest->getCode()) {
-    case COMMAND_CODE::SET_PRIM:
-        break;
-    case COMMAND_CODE::SET_SCND:
-        break;
-    case COMMAND_CODE::SET_AUTO:
-        break;
     case COMMAND_CODE::STATE:
         updateViewState(executedRequest->getAnswer());
         break;
     case COMMAND_CODE::LOUD_THR:
+        currentSetpoints.loudThreshold = Parser::parseInt(executedRequest->getAnswer());
         break;
     case COMMAND_CODE::QUIET_THR:
+        currentSetpoints.quietThreshold = Parser::parseInt(executedRequest->getAnswer());
         break;
     case COMMAND_CODE::LOUD_TIMEOUT:
+        currentSetpoints.loudTimeout = Parser::parseInt(executedRequest->getAnswer());
         break;
     case COMMAND_CODE::QUIET_TIMEOUT:
+        currentSetpoints.quietTimeout = Parser::parseInt(executedRequest->getAnswer());
+        // TODO: fix this as soon as possible!!
+        view->setSetpoints(currentSetpoints);
+        break;
+    case COMMAND_CODE::DHCP:
+        currentNetworkSettings.useDhcp = Parser::parseInt(executedRequest->getAnswer());
         break;
     case COMMAND_CODE::IP_ADDR:
+        currentNetworkSettings.newAddressString = executedRequest->getAnswer();
         break;
     case COMMAND_CODE::PORT:
+        currentNetworkSettings.newPort = Parser::parseInt(executedRequest->getAnswer());
         break;
     case COMMAND_CODE::NETMASK:
+        currentNetworkSettings.netmask = executedRequest->getAnswer();
         break;
     case COMMAND_CODE::GATEWAY:
-        break;
-    case COMMAND_CODE::RELAY:
+        currentNetworkSettings.gateway = executedRequest->getAnswer();
+        // TODO: fix this as soon as possible!!
+        view->setNetworkSettings(currentNetworkSettings);
         break;
     default:
-        qDebug() << "Unknown command code";
         break;
     }
 
@@ -84,12 +100,12 @@ void Presenter::handleExecutedRequest(Command *executedRequest){
 }
 
 void Presenter::reportError(QString error){
-    view->setErrorText(error);
+    view->setStatusText(error);
 }
 
 void Presenter::requestState(){
-    // Command* stateRequest = new Command(COMMAND_CODE::STATE);
-    // avarkomPMS->processRequest(stateRequest);
+    //Command* stateRequest = new Command(COMMAND_CODE::STATE);
+    //avarkomPMS->processNewCommand(stateRequest);
 }
 
 void Presenter::changeDeviceState(QString newState){
@@ -112,26 +128,26 @@ void Presenter::changeDeviceState(QString newState){
     avarkomPMS->processNewCommand(stateRequest);
 }
 
-void Presenter::updateDeviceSetpoints(){
-    avarkomPMS->processNewCommand(new Command(COMMAND_CODE::LOUD_THR,
-                                              view->getLoudThreshold()));
-    avarkomPMS->processNewCommand(new Command(COMMAND_CODE::QUIET_THR,
-                                              view->getQuietThreshold()));
-    avarkomPMS->processNewCommand(new Command(COMMAND_CODE::LOUD_TIMEOUT,
-                                              view->getLoudTimeout()));
-    avarkomPMS->processNewCommand(new Command(COMMAND_CODE::QUIET_TIMEOUT,
-                                              view->getQuietTimeout()));
+void Presenter::toggleRelay(bool state){
+    int integerState = int(state);
+    integerState &= 1;  // make it 0 or 1
+
+    avarkomPMS->processNewCommand(new Command(COMMAND_CODE::RELAY, integerState));
 }
 
-void Presenter::updateDeviceNetworkSettings(){
-    avarkomPMS->processNewCommand(new Command(COMMAND_CODE::IP_ADDR,
-                                              view->getNewAddressString()));
-    avarkomPMS->processNewCommand(new Command(COMMAND_CODE::PORT,
-                                              view->getNewPort()));
-    avarkomPMS->processNewCommand(new Command(COMMAND_CODE::NETMASK,
-                                              view->getNetmask()));
-    avarkomPMS->processNewCommand(new Command(COMMAND_CODE::GATEWAY,
-                                              view->getGateway()));
+void Presenter::updateDeviceSetpoints(Setpoints setpoints){
+    avarkomPMS->processNewCommand(new Command(COMMAND_CODE::LOUD_THR, setpoints.loudThreshold));
+    avarkomPMS->processNewCommand(new Command(COMMAND_CODE::QUIET_THR, setpoints.quietThreshold));
+    avarkomPMS->processNewCommand(new Command(COMMAND_CODE::LOUD_TIMEOUT, setpoints.loudTimeout));
+    avarkomPMS->processNewCommand(new Command(COMMAND_CODE::QUIET_TIMEOUT, setpoints.quietTimeout));
+}
+
+void Presenter::updateDeviceNetworkSettings(NetworkSettings settings){
+    avarkomPMS->processNewCommand(new Command(COMMAND_CODE::DHCP, settings.useDhcp));
+    avarkomPMS->processNewCommand(new Command(COMMAND_CODE::IP_ADDR, settings.newAddressString));
+    avarkomPMS->processNewCommand(new Command(COMMAND_CODE::PORT, settings.newPort));
+    avarkomPMS->processNewCommand(new Command(COMMAND_CODE::NETMASK, settings.netmask));
+    avarkomPMS->processNewCommand(new Command(COMMAND_CODE::GATEWAY, settings.gateway));
 }
 
 void Presenter::makeConnecton(){
@@ -139,33 +155,57 @@ void Presenter::makeConnecton(){
     addr.setAddress(view->getAddressString());
 
     avarkomPMS->connect(addr,view->getPort());
-    pollingTimer->start(pollingTime);
+    view->changeToConnectionMode();
+    watchDog->start();
 }
 
 void Presenter::makeDisconnecton(){
     avarkomPMS->disconnect();
     pollingTimer->stop();
+    watchDog->stop();
 }
 
-void Presenter::indicateConnection(){
+void Presenter::connectionTimeout(){
+    avarkomPMS->abortConnection();
+    view->changeToDisconnectedMode();
+    watchDog->stop();
+    reportError("Превышено время ожидания соединения");
+}
+
+void Presenter::onConnect(){
+    watchDog->stop();
     view->changeToConnetedMode();
+    requestAllParams();
+    pollingTimer->start();
 }
 
-void Presenter::indicateDisconnection(){
+void Presenter::onDisconnect(){
     view->changeToDisconnectedMode();
 }
 
 void Presenter::updateViewState(QString deviceAnswer){
-    if (responseParser->parseState(deviceAnswer)){
-        view->setState(responseParser->getState());
-
-        view->set1SourceLeftLevel(responseParser->get1sourceLeftLevel());
-        view->set1SourceRightLevel(responseParser->get1sourceRightLevel());
-        view->set2SourceLeftLevel(responseParser->get2sourceLeftLevel());
-        view->set2SourceRightLevel(responseParser->get2sourceRightLevel());
+    State newState;
+    if (responseParser->parseState(newState, deviceAnswer)){
+        view->setState(newState);
     }
     else{
-        view->setErrorText("Неинтерпретируемый ответ устройства");
+        reportError("Неправильное описание состояния");
     }
+}
+
+void Presenter::requestAllParams(){
+    requestState();
+
+    avarkomPMS->processNewCommand(new Command(COMMAND_CODE::LOUD_THR));
+    avarkomPMS->processNewCommand(new Command(COMMAND_CODE::QUIET_THR));
+    avarkomPMS->processNewCommand(new Command(COMMAND_CODE::LOUD_TIMEOUT));
+    avarkomPMS->processNewCommand(new Command(COMMAND_CODE::QUIET_TIMEOUT));
+
+
+    avarkomPMS->processNewCommand(new Command(COMMAND_CODE::DHCP));
+    avarkomPMS->processNewCommand(new Command(COMMAND_CODE::IP_ADDR));
+    avarkomPMS->processNewCommand(new Command(COMMAND_CODE::PORT));
+    avarkomPMS->processNewCommand(new Command(COMMAND_CODE::NETMASK));
+    avarkomPMS->processNewCommand(new Command(COMMAND_CODE::GATEWAY));
 }
 
