@@ -43,6 +43,9 @@ class MainWindow : public QMainWindow
     QString activeStyleSheet;
     QString passiveStyleSheet;
 
+    void _setValidators();
+    bool _addressesAreValid();
+
 private slots:
     void emitChangeStateSignal();
     void emitChangeNetworkSettings();

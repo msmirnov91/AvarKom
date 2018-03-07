@@ -174,7 +174,6 @@ void Presenter::connectionTimeout(){
 }
 
 void Presenter::setPollingTime(int pollingTime){
-    qDebug() << pollingTime;
     pollingTimer->setInterval(pollingTime);
 }
 

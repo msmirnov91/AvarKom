@@ -1,5 +1,6 @@
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
+#include <QValidator>
 
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
@@ -42,6 +43,14 @@ MainWindow::MainWindow(QWidget *parent) :
     ui->pollingTimeSlider->setValue(pollingTime);
 
     changeToDisconnectedMode();
+}
+
+void MainWindow::_setValidators(){
+    return;
+}
+
+bool MainWindow::_addressesAreValid(){
+    return true;
 }
 
 MainWindow::~MainWindow(){
