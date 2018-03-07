@@ -55,9 +55,8 @@ void Presenter::connectAvarkomSignals(){
 }
 
 void Presenter::handleExecutedRequest(Command *executedRequest){
-    // TODO: MUCH better would be fetching all
-    // network settings and setpoints with one command
-    // like status
+    // TODO: in this case MUCH better would be fetching all
+    // network settings and setpoints with one command (like status)
     switch (executedRequest->getCode()) {
     case COMMAND_CODE::STATE:
         updateViewState(executedRequest->getAnswer());
