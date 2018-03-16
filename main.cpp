@@ -4,6 +4,7 @@
 #include "parser.h"
 #include "avarkom.h"
 
+
 int main(int argc, char *argv[])
 {
     QApplication a(argc, argv);
@@ -11,7 +12,7 @@ int main(int argc, char *argv[])
     QApplication::setOrganizationName("PMS");
     QApplication::setApplicationName("AvarkomPMS");
 
-    MainWindow w;
+    MainWindow w(QApplication::applicationDirPath());
 
     Avarkom dev;
     Parser pars;

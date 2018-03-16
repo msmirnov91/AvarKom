@@ -37,7 +37,7 @@ class MainWindow;
 class MainWindow : public QMainWindow
 {
     Q_OBJECT
-    QSettings storedConnectionParams;
+    QSettings* storedConnectionParams;
 
     Ui::MainWindow *ui;
     QString activeStyleSheet;
@@ -55,7 +55,7 @@ private slots:
     void emitPollingTimeChanged(int time);
 
 public:
-    explicit MainWindow(QWidget *parent = 0);
+    explicit MainWindow(QString settingsPath, QWidget *parent = 0);
     ~MainWindow();
 
     QString getAddressString();

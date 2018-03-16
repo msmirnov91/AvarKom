@@ -84,10 +84,10 @@
             </property>
            </widget>
           </item>
-          <item row="0" column="0">
-           <widget class="QLabel" name="ipLabel">
-            <property name="text">
-             <string>IP</string>
+          <item row="0" column="3">
+           <widget class="QSpinBox" name="portSpinBox">
+            <property name="value">
+             <number>90</number>
             </property>
            </widget>
           </item>
@@ -98,10 +98,17 @@
             </property>
            </widget>
           </item>
-          <item row="0" column="3">
-           <widget class="QSpinBox" name="portSpinBox">
-            <property name="value">
-             <number>90</number>
+          <item row="0" column="0">
+           <widget class="QLabel" name="ipLabel">
+            <property name="text">
+             <string>IP</string>
+            </property>
+           </widget>
+          </item>
+          <item row="1" column="1">
+           <widget class="QComboBox" name="comboBox">
+            <property name="editable">
+             <bool>true</bool>
             </property>
            </widget>
           </item>

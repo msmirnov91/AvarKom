@@ -1,11 +1,16 @@
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
 #include <QValidator>
+#include "QDir"
 
-MainWindow::MainWindow(QWidget *parent) :
+
+MainWindow::MainWindow(QString settingsPath, QWidget *parent) :
     QMainWindow(parent),
     ui(new Ui::MainWindow){
     ui->setupUi(this);
+
+    storedConnectionParams = new QSettings(settingsPath + QDir::separator() +
+                                           "settings.cfg", QSettings::IniFormat);
 
     // connect/disconnect signals
     QObject::connect(ui->connectButton, SIGNAL(clicked()),
@@ -34,12 +39,12 @@ MainWindow::MainWindow(QWidget *parent) :
     activeStyleSheet = "background-color: #3cbaa2;";
     passiveStyleSheet = "";
 
-    QString addr = storedConnectionParams.value("IPADDR", "10.0.0.100").toString();
-    int port = storedConnectionParams.value("PORT", 90).toInt();
+    QString addr = storedConnectionParams->value("IPADDR", "10.0.0.100").toString();
+    int port = storedConnectionParams->value("PORT", 90).toInt();
     ui->ipLineEdit->setText(addr);
     ui->portSpinBox->setValue(port);
 
-    int pollingTime = storedConnectionParams.value("POLLINGTIME", 5000).toInt();
+    int pollingTime = storedConnectionParams->value("POLLINGTIME", 5000).toInt();
     ui->pollingTimeSlider->setValue(pollingTime);
 
     changeToDisconnectedMode();
@@ -55,6 +60,7 @@ bool MainWindow::_addressesAreValid(){
 
 MainWindow::~MainWindow(){
     delete ui;
+    delete storedConnectionParams;
 }
 
 QString MainWindow::getAddressString(){
@@ -102,7 +108,8 @@ void MainWindow::emitChangeSetpoints(){
 }
 
 void MainWindow::emitPollingTimeChanged(int time){
-    storedConnectionParams.setValue("POLLINGTIME", time);
+    storedConnectionParams->setValue("POLLINGTIME", time);
+    storedConnectionParams->sync();
     emit pollingTimeChanged(time);
 }
 
@@ -183,8 +190,9 @@ void MainWindow::setNetworkSettings(NetworkSettings settings){
     ui->gateLineEdit->setText(settings.gateway);
     setStatusText("Новые параметры соединения установлены");
 
-    storedConnectionParams.setValue("IPADDR", settings.newAddressString);
-    storedConnectionParams.setValue("PORT", settings.newPort);
+    storedConnectionParams->setValue("IPADDR", settings.newAddressString.trimmed());
+    storedConnectionParams->setValue("PORT", settings.newPort);
+    storedConnectionParams->sync();
 }
 
 void MainWindow::setStatusText(QString statusText){
