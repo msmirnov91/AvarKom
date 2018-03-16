@@ -27,7 +27,7 @@ private slots:
     void onError(QAbstractSocket::SocketError error);
 
 public:
-    Avarkom();
+    Avarkom(QString logPath);
     ~Avarkom();
 
     void processNewCommand(Command* newCmd);

@@ -1,6 +1,7 @@
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
 #include <QValidator>
+#include <QStringList>
 #include "QDir"
 
 
@@ -9,8 +10,8 @@ MainWindow::MainWindow(QString settingsPath, QWidget *parent) :
     ui(new Ui::MainWindow){
     ui->setupUi(this);
 
-    storedConnectionParams = new QSettings(settingsPath + QDir::separator() +
-                                           "settings.cfg", QSettings::IniFormat);
+    activeStyleSheet = "background-color: #3cbaa2;";
+    passiveStyleSheet = "";
 
     // connect/disconnect signals
     QObject::connect(ui->connectButton, SIGNAL(clicked()),
@@ -36,35 +37,35 @@ MainWindow::MainWindow(QString settingsPath, QWidget *parent) :
     QObject::connect(ui->setNetworkParamsButton, SIGNAL(clicked()),
                      this, SLOT(emitChangeNetworkSettings()));
 
-    activeStyleSheet = "background-color: #3cbaa2;";
-    passiveStyleSheet = "";
+    storedAppSettings = new QSettings(settingsPath + QDir::separator() +
+                                           "settings.ini", QSettings::IniFormat);
 
-    QString addr = storedConnectionParams->value("IPADDR", "10.0.0.100").toString();
-    int port = storedConnectionParams->value("PORT", 90).toInt();
-    ui->ipLineEdit->setText(addr);
+    QStringList addrList;
+    int size = storedAppSettings->beginReadArray("IPADDRS");
+    for (int i = 0; i < size; i++){
+        storedAppSettings->setArrayIndex(i);
+        addrList.append(storedAppSettings->value("ADDR").toString());
+    }
+    storedAppSettings->endArray();
+
+    ui->ipComboBox->addItems(addrList);
+
+    int port = storedAppSettings->value("PORT", 90).toInt();
     ui->portSpinBox->setValue(port);
 
-    int pollingTime = storedConnectionParams->value("POLLINGTIME", 5000).toInt();
+    int pollingTime = storedAppSettings->value("POLLINGTIME", 5000).toInt();
     ui->pollingTimeSlider->setValue(pollingTime);
 
     changeToDisconnectedMode();
 }
 
-void MainWindow::_setValidators(){
-    return;
-}
-
-bool MainWindow::_addressesAreValid(){
-    return true;
-}
-
 MainWindow::~MainWindow(){
     delete ui;
-    delete storedConnectionParams;
+    delete storedAppSettings;
 }
 
 QString MainWindow::getAddressString(){
-    return ui->ipLineEdit->text();
+    return ui->ipComboBox->currentText();
 }
 
 qint16 MainWindow::getPort(){
@@ -108,8 +109,8 @@ void MainWindow::emitChangeSetpoints(){
 }
 
 void MainWindow::emitPollingTimeChanged(int time){
-    storedConnectionParams->setValue("POLLINGTIME", time);
-    storedConnectionParams->sync();
+    storedAppSettings->setValue("POLLINGTIME", time);
+    storedAppSettings->sync();
     emit pollingTimeChanged(time);
 }
 
@@ -118,6 +119,8 @@ void MainWindow::enableIpString(bool useDhcp){
 }
 
 void MainWindow::changeToConnetedMode(){
+    ui->connectButton->setEnabled(false);
+    ui->disconnectButton->setEnabled(true);
     ui->deviceControlGB->setEnabled(true);
     ui->indication1GB->setEnabled(true);
     ui->indication2GB->setEnabled(true);
@@ -132,6 +135,8 @@ void MainWindow::changeToDisconnectedMode(){
     ui->source1Button->setStyleSheet(passiveStyleSheet);
     ui->source2Button->setStyleSheet(passiveStyleSheet);
 
+    ui->connectButton->setEnabled(true);
+    ui->disconnectButton->setEnabled(false);
     ui->deviceControlGB->setEnabled(false);
     ui->indication1GB->setEnabled(false);
     ui->indication2GB->setEnabled(false);
@@ -143,6 +148,7 @@ void MainWindow::changeToDisconnectedMode(){
 
 void MainWindow::changeToConnectionMode(){
     changeToDisconnectedMode();
+    ui->connectButton->setEnabled(false);
     ui->connParamGB->setEnabled(false);
     setStatusText("Соединение...");
 }
@@ -190,9 +196,16 @@ void MainWindow::setNetworkSettings(NetworkSettings settings){
     ui->gateLineEdit->setText(settings.gateway);
     setStatusText("Новые параметры соединения установлены");
 
-    storedConnectionParams->setValue("IPADDR", settings.newAddressString.trimmed());
-    storedConnectionParams->setValue("PORT", settings.newPort);
-    storedConnectionParams->sync();
+    int addressesAmount = ui->ipComboBox->count();
+    storedAppSettings->beginWriteArray("IPADDRS");
+    for (int i = 0; i < addressesAmount; i++){
+        storedAppSettings->setArrayIndex(i);
+        storedAppSettings->setValue("ADDR", ui->ipComboBox->itemText(i));
+    }
+    storedAppSettings->endArray();
+
+    storedAppSettings->setValue("PORT", settings.newPort);
+    storedAppSettings->sync();
 }
 
 void MainWindow::setStatusText(QString statusText){

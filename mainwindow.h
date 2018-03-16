@@ -37,14 +37,11 @@ class MainWindow;
 class MainWindow : public QMainWindow
 {
     Q_OBJECT
-    QSettings* storedConnectionParams;
+    QSettings* storedAppSettings;
 
     Ui::MainWindow *ui;
     QString activeStyleSheet;
     QString passiveStyleSheet;
-
-    void _setValidators();
-    bool _addressesAreValid();
 
 private slots:
     void emitChangeStateSignal();
@@ -67,7 +64,7 @@ public:
 
     void setState(State state);
     void setSetpoints(Setpoints setpoints);
-    void setNetworkSettings(NetworkSettings storedConnectionParams);
+    void setNetworkSettings(NetworkSettings storedAppSettings);
     void setStatusText(QString statusText);
 
     int getPollingTime();

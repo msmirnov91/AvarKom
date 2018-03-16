@@ -26,6 +26,7 @@ HEADERS  += mainwindow.h \
     parser.h \
     presenter.h \
     avarkom.h \
-    command.h
+    command.h \
+    easylogging++.h
 
 FORMS    += mainwindow.ui

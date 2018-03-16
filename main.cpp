@@ -14,7 +14,7 @@ int main(int argc, char *argv[])
 
     MainWindow w(QApplication::applicationDirPath());
 
-    Avarkom dev;
+    Avarkom dev(QApplication::applicationDirPath());
     Parser pars;
     Presenter p(&dev, &pars, &w);
     return a.exec();
