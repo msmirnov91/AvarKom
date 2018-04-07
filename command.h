@@ -8,6 +8,8 @@ enum COMMAND_CODE{SET_PRIM,
                   SET_SCND,
                   SET_AUTO,
                   STATE,
+                  NETWORK_STATE,
+                  COMMUTATION_STATE,
                   LOUD_THR,
                   QUIET_THR,
                   LOUD_TIMEOUT,
@@ -23,33 +25,23 @@ enum COMMAND_CODE{SET_PRIM,
 class Command
 {
     COMMAND_CODE code;
-    QString cmd;
-    QString answ;
-
-    std::map<COMMAND_CODE, QString> COMMANDS = {
-        {SET_PRIM, "PRIM"},
-        {SET_SCND, "SCND"},
-        {SET_AUTO, "AUTO"},
-        {STATE, "STAT"},
-        {LOUD_THR, "LTHR"},
-        {QUIET_THR, "QTHR"},
-        {LOUD_TIMEOUT, "LTIM"},
-        {QUIET_TIMEOUT, "QTIM"},
-        {DHCP, "DHCP"},
-        {IP_ADDR, "ADDR"},
-        {PORT, "PORT"},
-        {NETMASK, "MASK"},
-        {GATEWAY, "GATE"},
-        {RELAY, "RLAY"}
-    };
+    QByteArray answ;
+    QByteArray octets;
+    qint8 parameter;
+    bool answered;
 
 public:
+    static int commandLength;
+    static int replyLength;
+
     Command(COMMAND_CODE commandCode);
     Command(COMMAND_CODE commandCode, int param);
     Command(COMMAND_CODE commandCode, QString param);
-    void setAnswer(QString answer);
-    QString getCmd();
-    QString getAnswer();
+    void setAnswer(QByteArray answer);
+    void setAnswered(bool isAnswered);
+    bool isAnswered();
+    QByteArray getByteArray();
+    QByteArray getAnswer();
     COMMAND_CODE getCode();
 };
 

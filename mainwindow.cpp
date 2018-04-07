@@ -163,6 +163,9 @@ void MainWindow::setState(State state){
     ui->source1Button->setStyleSheet(passiveStyleSheet);
     ui->source2Button->setStyleSheet(passiveStyleSheet);
 
+    ui->autoButton->setStyleSheet(
+                state.currState == State::AUTO ? activeStyleSheet : passiveStyleSheet);
+
     switch (state.currSource){
         case State::PRIM:
             ui->source1Button->setStyleSheet(activeStyleSheet);
@@ -170,10 +173,6 @@ void MainWindow::setState(State state){
         case State::SCND:
             ui->source2Button->setStyleSheet(activeStyleSheet);
             break;
-        case State::AUTO:
-            ui->autoButton->setStyleSheet(activeStyleSheet);
-            break;
-
     }
 
     ui->relayRB->setChecked(bool(state.relayState));

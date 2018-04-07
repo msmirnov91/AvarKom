@@ -3,6 +3,7 @@
 #include "presenter.h"
 #include "parser.h"
 #include "avarkom.h"
+#include "logger.h"
 
 
 int main(int argc, char *argv[])
@@ -12,10 +13,13 @@ int main(int argc, char *argv[])
     QApplication::setOrganizationName("PMS");
     QApplication::setApplicationName("AvarkomPMS");
 
+    Logger::init(QApplication::applicationDirPath());
+    Logger::setEnabled(false);
+
+    // TODO: implement passing settings path in another way
     MainWindow w(QApplication::applicationDirPath());
 
-    Avarkom dev(QApplication::applicationDirPath());
-    Parser pars;
-    Presenter p(&dev, &pars, &w);
+    Avarkom dev;
+    Presenter p(&dev, &w);
     return a.exec();
 }

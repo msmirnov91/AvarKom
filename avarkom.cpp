@@ -1,76 +1,69 @@
 #include "avarkom.h"
-#include "QDir"
-#include "easylogging++.h"
+#include "logger.h"
 
 
-INITIALIZE_EASYLOGGINGPP
-
-
-// TODO: fix all log reports!!!!!!!!!!!!!!!!!!!!!!!!!!
-
-Avarkom::Avarkom(QString logPath){
+Avarkom::Avarkom(){
     _sock = new QTcpSocket();
     inBuffer = "";
 
     processingRequest = false;
+    answerTimer = new QTimer();
+    answerTimer->setInterval(2000);
 
     QObject::connect(_sock, SIGNAL(connected()), this, SLOT(onConnected()));
     QObject::connect(_sock, SIGNAL(disconnected()), this, SLOT(onDisconnected()));
     QObject::connect(_sock, SIGNAL(readyRead()), this, SLOT(receiveResponse()));
     QObject::connect(_sock, SIGNAL(error(QAbstractSocket::SocketError)),
                      this, SLOT(onError(QAbstractSocket::SocketError)));
+    QObject::connect(answerTimer, SIGNAL(timeout()), this, SLOT(answerTimeout()));
 
-    QString logFileName = logPath + QDir::separator() + "log.log";
-    el::Loggers::reconfigureAllLoggers(el::ConfigurationType::Filename,
-                                       logFileName.toUtf8().constData());
-
-    LOG(INFO)<< "Avarkom device class instantiated";
+    Logger::log("Avarkom device class instantiated");
 }
 
 Avarkom::~Avarkom(){
     abortConnection();
     delete _sock;
+    delete answerTimer;
 }
 
 void Avarkom::connect(QHostAddress addr, qint16 port){
     _sock->connectToHost(addr, port);
-    LOG(INFO)<< std::string("Connected to ") + addr.toString().toUtf8().constData();
+    Logger::log("Connected to " + addr.toString());
 }
 
 void Avarkom::disconnect(){
     _sock->disconnectFromHost();
-    LOG(INFO)<< "Disconnected";
+    Logger::log("Disconnected");
 }
 
 void Avarkom::abortConnection(){
     _sock->abort();
-    LOG(WARNING)<< "Connection aborted";
+    Logger::log("Connection aborted");
 }
 
 void Avarkom::receiveResponse(){
-    QString receivedString = QString(_sock->readAll());
-
-    inBuffer += receivedString;
-    if (inBuffer.contains('\n')){
+    inBuffer.append(_sock->readAll());
+    if (inBuffer.length() >= Command::replyLength){
         // we received complete response or the last part of it
-        LOG(INFO)<< std::string("Received response: ") + inBuffer.toUtf8().constData();
+        answerTimer->stop();
+        Logger::log("Received response");
         currentRequest->setAnswer(inBuffer);
+        currentRequest->setAnswered(true);
         emit requestProcessingFinished(currentRequest);
-        inBuffer = "";
+        inBuffer.clear();
         processingRequest = false;
         processNextCommand();
     }
 }
 
 void Avarkom::onError(QAbstractSocket::SocketError error){
-    LOG(ERROR)<< "Socket error!";
+    Logger::log("Socket error");
     emit errorReport("Error!");
 }
 
-void Avarkom::sendCommand(QString command){
-    QString validCommand = command + "\r";
-    _sock->write(validCommand.toUtf8());
-    LOG(INFO)<< std::string("Sending command ") + validCommand.toUtf8().constData();
+
+void Avarkom::sendCommand(QByteArray array){
+    _sock->write(array, Command::commandLength);
 }
 
 
@@ -93,5 +86,12 @@ void Avarkom::processNextCommand(){
 
     processingRequest = true;
     currentRequest = requestsQueue.dequeue();
-    sendCommand(currentRequest->getCmd());
+    sendCommand(currentRequest->getByteArray());
+    answerTimer->start();
+}
+
+void Avarkom::answerTimeout(){
+    answerTimer->stop();
+    currentRequest->setAnswered(false);
+    emit requestProcessingFinished(currentRequest);
 }

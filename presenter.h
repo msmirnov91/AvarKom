@@ -15,21 +15,14 @@ class Presenter: public QObject
     QTimer *watchDog;
 
     Avarkom *avarkomPMS;
-    Parser *responseParser;
     MainWindow *view;
-
-    State currentAvarkomState;
-    Setpoints currentSetpoints;
-    NetworkSettings currentNetworkSettings;
 
     void connectViewSignals();
     void connectAvarkomSignals();
-
-    void updateViewState(QString deviceAnswer);
     void requestAllParams();
 
 public:
-    Presenter(Avarkom *device, Parser *parser, MainWindow *UIView);
+    Presenter(Avarkom *device, MainWindow *UIView);
     ~Presenter();
 
 public slots:

@@ -1,8 +1,7 @@
 #include "presenter.h"
 
-Presenter::Presenter(Avarkom *device, Parser *parser, MainWindow *UIView){
+Presenter::Presenter(Avarkom *device, MainWindow *UIView){
     avarkomPMS = device;
-    responseParser = parser;
     view = UIView;
 
     connectViewSignals();
@@ -55,47 +54,35 @@ void Presenter::connectAvarkomSignals(){
 }
 
 void Presenter::handleExecutedRequest(Command *executedRequest){
-    // TODO: in this case MUCH better would be fetching all
-    // network settings and setpoints with one command (like status)
-    switch (executedRequest->getCode()) {
-    case COMMAND_CODE::STATE:
-        updateViewState(executedRequest->getAnswer());
-        break;
-    case COMMAND_CODE::LOUD_THR:
-        currentSetpoints.loudThreshold = Parser::parseInt(executedRequest->getAnswer());
-        break;
-    case COMMAND_CODE::QUIET_THR:
-        currentSetpoints.quietThreshold = Parser::parseInt(executedRequest->getAnswer());
-        break;
-    case COMMAND_CODE::LOUD_TIMEOUT:
-        currentSetpoints.loudTimeout = Parser::parseInt(executedRequest->getAnswer());
-        break;
-    case COMMAND_CODE::QUIET_TIMEOUT:
-        currentSetpoints.quietTimeout = Parser::parseInt(executedRequest->getAnswer());
-        // TODO: fix this as soon as possible!!
-        view->setSetpoints(currentSetpoints);
-        break;
-    case COMMAND_CODE::DHCP:
-        currentNetworkSettings.useDhcp = Parser::parseInt(executedRequest->getAnswer());
-        break;
-    case COMMAND_CODE::IP_ADDR:
-        currentNetworkSettings.newAddressString = executedRequest->getAnswer();
-        break;
-    case COMMAND_CODE::PORT:
-        currentNetworkSettings.newPort = Parser::parseInt(executedRequest->getAnswer());
-        break;
-    case COMMAND_CODE::NETMASK:
-        currentNetworkSettings.netmask = executedRequest->getAnswer();
-        break;
-    case COMMAND_CODE::GATEWAY:
-        currentNetworkSettings.gateway = executedRequest->getAnswer();
-        // TODO: fix this as soon as possible!!
-        view->setNetworkSettings(currentNetworkSettings);
-        break;
-    default:
-        break;
+    if (executedRequest->isAnswered()){
+        switch (executedRequest->getCode()) {
+        case COMMAND_CODE::STATE: {
+            State currentAvarkomState;
+            Parser::parseState(currentAvarkomState, executedRequest->getAnswer());
+            view->setState(currentAvarkomState);
+            break;
+            }
+        case COMMAND_CODE::COMMUTATION_STATE: {
+            Setpoints currentSetpoints;
+            Parser::parseSetpoints(currentSetpoints, executedRequest->getAnswer());
+            view->setSetpoints(currentSetpoints);
+            break;
+            }
+        case COMMAND_CODE::NETWORK_STATE: {
+            NetworkSettings currentNetworkSettings;
+            Parser::parseNetworkSettings(currentNetworkSettings, executedRequest->getAnswer());
+            view->setNetworkSettings(currentNetworkSettings);
+            break;
+            }
+        default:
+            break;
+        }
     }
-
+    else{
+        avarkomPMS->abortConnection();
+        view->changeToDisconnectedMode();
+        view->setStatusText("Превышен таймаут ожидания ответа");
+    }
     delete executedRequest;
 }
 
@@ -140,6 +127,7 @@ void Presenter::updateDeviceSetpoints(Setpoints setpoints){
     avarkomPMS->processNewCommand(new Command(COMMAND_CODE::QUIET_THR, setpoints.quietThreshold));
     avarkomPMS->processNewCommand(new Command(COMMAND_CODE::LOUD_TIMEOUT, setpoints.loudTimeout));
     avarkomPMS->processNewCommand(new Command(COMMAND_CODE::QUIET_TIMEOUT, setpoints.quietTimeout));
+    avarkomPMS->processNewCommand(new Command(COMMAND_CODE::COMMUTATION_STATE));
 }
 
 void Presenter::updateDeviceNetworkSettings(NetworkSettings settings){
@@ -148,6 +136,7 @@ void Presenter::updateDeviceNetworkSettings(NetworkSettings settings){
     avarkomPMS->processNewCommand(new Command(COMMAND_CODE::PORT, settings.newPort));
     avarkomPMS->processNewCommand(new Command(COMMAND_CODE::NETMASK, settings.netmask));
     avarkomPMS->processNewCommand(new Command(COMMAND_CODE::GATEWAY, settings.gateway));
+    avarkomPMS->processNewCommand(new Command(COMMAND_CODE::NETWORK_STATE));
 }
 
 void Presenter::makeConnecton(){
@@ -187,29 +176,9 @@ void Presenter::onDisconnect(){
     view->changeToDisconnectedMode();
 }
 
-void Presenter::updateViewState(QString deviceAnswer){
-    State newState;
-    if (responseParser->parseState(newState, deviceAnswer)){
-        view->setState(newState);
-    }
-    else{
-        reportError("Неправильное описание состояния");
-    }
-}
-
 void Presenter::requestAllParams(){
     requestState();
-
-    avarkomPMS->processNewCommand(new Command(COMMAND_CODE::LOUD_THR));
-    avarkomPMS->processNewCommand(new Command(COMMAND_CODE::QUIET_THR));
-    avarkomPMS->processNewCommand(new Command(COMMAND_CODE::LOUD_TIMEOUT));
-    avarkomPMS->processNewCommand(new Command(COMMAND_CODE::QUIET_TIMEOUT));
-
-
-    avarkomPMS->processNewCommand(new Command(COMMAND_CODE::DHCP));
-    avarkomPMS->processNewCommand(new Command(COMMAND_CODE::IP_ADDR));
-    avarkomPMS->processNewCommand(new Command(COMMAND_CODE::PORT));
-    avarkomPMS->processNewCommand(new Command(COMMAND_CODE::NETMASK));
-    avarkomPMS->processNewCommand(new Command(COMMAND_CODE::GATEWAY));
+    avarkomPMS->processNewCommand(new Command(COMMAND_CODE::COMMUTATION_STATE));
+    avarkomPMS->processNewCommand(new Command(COMMAND_CODE::NETWORK_STATE));
 }
 

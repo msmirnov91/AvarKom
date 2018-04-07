@@ -5,29 +5,30 @@
 #include "QSettings"
 
 struct NetworkSettings{
-    int useDhcp;
+    unsigned int useDhcp;
     QString newAddressString;
-    int newPort;
+    unsigned int newPort;
     QString netmask;
     QString gateway;
 };
 
 struct Setpoints{
-    int loudThreshold;
-    int quietThreshold;
-    int loudTimeout;
-    int quietTimeout;
+    unsigned int loudThreshold;
+    unsigned int quietThreshold;
+    unsigned int loudTimeout;
+    unsigned int quietTimeout;
 };
 
 struct State{
     enum {PRIM, SCND, AUTO};
 
-    int currSource;
-    int fstSourceLeft;
-    int fstSourceRight;
-    int sndSourceLeft;
-    int sndSourceRight;
-    int relayState;
+    unsigned int fstSourceLeft;
+    unsigned int fstSourceRight;
+    unsigned int sndSourceLeft;
+    unsigned int sndSourceRight;
+    unsigned int currState;
+    unsigned int currSource;
+    unsigned int relayState;
 };
 
 namespace Ui {

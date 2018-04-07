@@ -6,6 +6,7 @@
 #include "QTcpSocket"
 #include "QHostAddress"
 #include "command.h"
+#include "QTimer"
 
 class Avarkom: public QObject
 {
@@ -14,7 +15,9 @@ class Avarkom: public QObject
     QTcpSocket *_sock;
     Command* currentRequest;
     void sendCommand(QString command);
-    QString inBuffer;
+    void sendCommand(QByteArray array);
+    QByteArray inBuffer;
+    QTimer *answerTimer;
 
     bool processingRequest;
     QQueue<Command*> requestsQueue;
@@ -25,9 +28,10 @@ private slots:
 
     void receiveResponse();
     void onError(QAbstractSocket::SocketError error);
+    void answerTimeout();
 
 public:
-    Avarkom(QString logPath);
+    Avarkom();
     ~Avarkom();
 
     void processNewCommand(Command* newCmd);

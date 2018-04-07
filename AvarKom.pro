@@ -20,13 +20,15 @@ SOURCES += main.cpp\
     parser.cpp \
     presenter.cpp \
     avarkom.cpp \
-    command.cpp
+    command.cpp \
+    logger.cpp
 
 HEADERS  += mainwindow.h \
     parser.h \
     presenter.h \
     avarkom.h \
     command.h \
-    easylogging++.h
+    easylogging++.h \
+    logger.h
 
 FORMS    += mainwindow.ui
