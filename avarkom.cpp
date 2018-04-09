@@ -8,7 +8,7 @@ Avarkom::Avarkom(){
 
     processingRequest = false;
     answerTimer = new QTimer();
-    answerTimer->setInterval(2000);
+    answerTimer->setInterval(1500);
 
     QObject::connect(_sock, SIGNAL(connected()), this, SLOT(onConnected()));
     QObject::connect(_sock, SIGNAL(disconnected()), this, SLOT(onDisconnected()));

@@ -1,8 +1,9 @@
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
-#include <QValidator>
-#include <QStringList>
+//#include <QValidator>
+//#include <QStringList>
 #include "QDir"
+#include "logger.h"
 
 
 MainWindow::MainWindow(QString settingsPath, QWidget *parent) :
@@ -22,6 +23,8 @@ MainWindow::MainWindow(QString settingsPath, QWidget *parent) :
                      this, SLOT(enableIpString(bool)));
     QObject::connect(ui->pollingTimeSlider, SIGNAL(valueChanged(int)),
                      this, SLOT(emitPollingTimeChanged(int)));
+    QObject::connect(ui->loggingCB, SIGNAL(toggled(bool)),
+                     this, SLOT(enableLogging(bool)));
 
     // control signals
     QObject::connect(ui->autoButton, SIGNAL(clicked()),
@@ -55,6 +58,10 @@ MainWindow::MainWindow(QString settingsPath, QWidget *parent) :
 
     int pollingTime = storedAppSettings->value("POLLINGTIME", 5000).toInt();
     ui->pollingTimeSlider->setValue(pollingTime);
+
+    bool logEnabled = storedAppSettings->value("LOGENABLED", false).toBool();
+    ui->loggingCB->setChecked(logEnabled);
+    enableLogging(logEnabled);
 
     changeToDisconnectedMode();
 }
@@ -112,6 +119,12 @@ void MainWindow::emitPollingTimeChanged(int time){
     storedAppSettings->setValue("POLLINGTIME", time);
     storedAppSettings->sync();
     emit pollingTimeChanged(time);
+}
+
+void MainWindow::enableLogging(bool enable){
+    Logger::setEnabled(enable);
+    storedAppSettings->setValue("LOGENABLED", enable);
+    storedAppSettings->sync();
 }
 
 void MainWindow::enableIpString(bool useDhcp){

@@ -51,6 +51,7 @@ private slots:
 
     void enableIpString(bool useDhcp);
     void emitPollingTimeChanged(int time);
+    void enableLogging(bool enable);
 
 public:
     explicit MainWindow(QString settingsPath, QWidget *parent = 0);

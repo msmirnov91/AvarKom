@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>650</width>
-    <height>595</height>
+    <height>601</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -15,157 +15,7 @@
   </property>
   <widget class="QWidget" name="centralWidget">
    <layout class="QGridLayout" name="gridLayout">
-    <item row="2" column="0">
-     <widget class="QGroupBox" name="indication1GB">
-      <property name="enabled">
-       <bool>true</bool>
-      </property>
-      <property name="maximumSize">
-       <size>
-        <width>16777215</width>
-        <height>100</height>
-       </size>
-      </property>
-      <property name="title">
-       <string>Источник 1</string>
-      </property>
-      <layout class="QGridLayout" name="gridLayout_3">
-       <item row="0" column="0">
-        <widget class="QProgressBar" name="source1LevelLeft">
-         <property name="enabled">
-          <bool>true</bool>
-         </property>
-         <property name="value">
-          <number>0</number>
-         </property>
-        </widget>
-       </item>
-       <item row="1" column="0">
-        <widget class="QProgressBar" name="source1LevelRight">
-         <property name="enabled">
-          <bool>true</bool>
-         </property>
-         <property name="value">
-          <number>0</number>
-         </property>
-        </widget>
-       </item>
-      </layout>
-     </widget>
-    </item>
-    <item row="0" column="0" colspan="2">
-     <widget class="QGroupBox" name="connectionGB">
-      <property name="maximumSize">
-       <size>
-        <width>16777215</width>
-        <height>16777215</height>
-       </size>
-      </property>
-      <property name="title">
-       <string>Соединение</string>
-      </property>
-      <layout class="QGridLayout" name="gridLayout_5">
-       <item row="1" column="0" colspan="2">
-        <widget class="QGroupBox" name="connStateGB">
-         <property name="maximumSize">
-          <size>
-           <width>16777215</width>
-           <height>80</height>
-          </size>
-         </property>
-         <property name="title">
-          <string>Статус</string>
-         </property>
-         <layout class="QGridLayout" name="gridLayout_8">
-          <item row="0" column="0">
-           <widget class="QLabel" name="connStateLabel">
-            <property name="text">
-             <string>Разъединен</string>
-            </property>
-            <property name="alignment">
-             <set>Qt::AlignCenter</set>
-            </property>
-           </widget>
-          </item>
-         </layout>
-        </widget>
-       </item>
-       <item row="0" column="1">
-        <widget class="QGroupBox" name="connControlGB">
-         <property name="maximumSize">
-          <size>
-           <width>16777215</width>
-           <height>90</height>
-          </size>
-         </property>
-         <property name="title">
-          <string>Управление</string>
-         </property>
-         <layout class="QGridLayout" name="gridLayout_7">
-          <item row="0" column="0">
-           <widget class="QPushButton" name="connectButton">
-            <property name="text">
-             <string>Соединить</string>
-            </property>
-           </widget>
-          </item>
-          <item row="1" column="0">
-           <widget class="QPushButton" name="disconnectButton">
-            <property name="text">
-             <string>Разъединить</string>
-            </property>
-           </widget>
-          </item>
-         </layout>
-        </widget>
-       </item>
-       <item row="0" column="0">
-        <widget class="QGroupBox" name="connParamGB">
-         <property name="maximumSize">
-          <size>
-           <width>16777215</width>
-           <height>90</height>
-          </size>
-         </property>
-         <property name="title">
-          <string>Параметры соединения</string>
-         </property>
-         <layout class="QGridLayout" name="gridLayout_6">
-          <item row="0" column="3">
-           <widget class="QLabel" name="portLabel">
-            <property name="text">
-             <string>Порт</string>
-            </property>
-           </widget>
-          </item>
-          <item row="0" column="4">
-           <widget class="QSpinBox" name="portSpinBox">
-            <property name="value">
-             <number>90</number>
-            </property>
-           </widget>
-          </item>
-          <item row="0" column="0">
-           <widget class="QLabel" name="ipLabel">
-            <property name="text">
-             <string>IP</string>
-            </property>
-           </widget>
-          </item>
-          <item row="0" column="2">
-           <widget class="QComboBox" name="ipComboBox">
-            <property name="editable">
-             <bool>true</bool>
-            </property>
-           </widget>
-          </item>
-         </layout>
-        </widget>
-       </item>
-      </layout>
-     </widget>
-    </item>
-    <item row="2" column="1">
+    <item row="3" column="1">
      <widget class="QGroupBox" name="indication2GB">
       <property name="enabled">
        <bool>true</bool>
@@ -203,7 +53,100 @@
       </layout>
      </widget>
     </item>
-    <item row="0" column="2" rowspan="3">
+    <item row="3" column="0">
+     <widget class="QGroupBox" name="indication1GB">
+      <property name="enabled">
+       <bool>true</bool>
+      </property>
+      <property name="maximumSize">
+       <size>
+        <width>16777215</width>
+        <height>100</height>
+       </size>
+      </property>
+      <property name="title">
+       <string>Источник 1</string>
+      </property>
+      <layout class="QGridLayout" name="gridLayout_3">
+       <item row="0" column="0">
+        <widget class="QProgressBar" name="source1LevelLeft">
+         <property name="enabled">
+          <bool>true</bool>
+         </property>
+         <property name="value">
+          <number>0</number>
+         </property>
+        </widget>
+       </item>
+       <item row="1" column="0">
+        <widget class="QProgressBar" name="source1LevelRight">
+         <property name="enabled">
+          <bool>true</bool>
+         </property>
+         <property name="value">
+          <number>0</number>
+         </property>
+        </widget>
+       </item>
+      </layout>
+     </widget>
+    </item>
+    <item row="2" column="0" colspan="2">
+     <widget class="QGroupBox" name="deviceControlGB">
+      <property name="enabled">
+       <bool>true</bool>
+      </property>
+      <property name="maximumSize">
+       <size>
+        <width>16777215</width>
+        <height>100</height>
+       </size>
+      </property>
+      <property name="title">
+       <string>Управление устройством</string>
+      </property>
+      <layout class="QGridLayout" name="gridLayout_2">
+       <item row="1" column="2">
+        <widget class="QPushButton" name="source2Button">
+         <property name="enabled">
+          <bool>true</bool>
+         </property>
+         <property name="text">
+          <string>Источник 2</string>
+         </property>
+        </widget>
+       </item>
+       <item row="1" column="3">
+        <widget class="QRadioButton" name="relayRB">
+         <property name="text">
+          <string>Реле</string>
+         </property>
+        </widget>
+       </item>
+       <item row="1" column="1">
+        <widget class="QPushButton" name="source1Button">
+         <property name="enabled">
+          <bool>true</bool>
+         </property>
+         <property name="text">
+          <string>Источник 1</string>
+         </property>
+        </widget>
+       </item>
+       <item row="0" column="1" colspan="3">
+        <widget class="QPushButton" name="autoButton">
+         <property name="enabled">
+          <bool>true</bool>
+         </property>
+         <property name="text">
+          <string>Авто</string>
+         </property>
+        </widget>
+       </item>
+      </layout>
+     </widget>
+    </item>
+    <item row="1" column="2" rowspan="3">
      <widget class="QGroupBox" name="paramsGB">
       <property name="title">
        <string>Настройки</string>
@@ -387,56 +330,123 @@
       </layout>
      </widget>
     </item>
-    <item row="1" column="0" colspan="2">
-     <widget class="QGroupBox" name="deviceControlGB">
-      <property name="enabled">
-       <bool>true</bool>
+    <item row="0" column="2">
+     <widget class="QCheckBox" name="loggingCB">
+      <property name="text">
+       <string>Включить логгирование</string>
       </property>
+      <property name="tristate">
+       <bool>false</bool>
+      </property>
+     </widget>
+    </item>
+    <item row="0" column="0" rowspan="2" colspan="2">
+     <widget class="QGroupBox" name="connectionGB">
       <property name="maximumSize">
        <size>
         <width>16777215</width>
-        <height>100</height>
+        <height>16777215</height>
        </size>
       </property>
       <property name="title">
-       <string>Управление устройством</string>
+       <string>Соединение</string>
       </property>
-      <layout class="QGridLayout" name="gridLayout_2">
-       <item row="1" column="2">
-        <widget class="QPushButton" name="source2Button">
-         <property name="enabled">
-          <bool>true</bool>
+      <layout class="QGridLayout" name="gridLayout_5">
+       <item row="1" column="0" colspan="2">
+        <widget class="QGroupBox" name="connStateGB">
+         <property name="maximumSize">
+          <size>
+           <width>16777215</width>
+           <height>80</height>
+          </size>
          </property>
-         <property name="text">
-          <string>Источник 2</string>
+         <property name="title">
+          <string>Статус</string>
          </property>
+         <layout class="QGridLayout" name="gridLayout_8">
+          <item row="0" column="0">
+           <widget class="QLabel" name="connStateLabel">
+            <property name="text">
+             <string>Разъединен</string>
+            </property>
+            <property name="alignment">
+             <set>Qt::AlignCenter</set>
+            </property>
+           </widget>
+          </item>
+         </layout>
         </widget>
        </item>
-       <item row="1" column="3">
-        <widget class="QRadioButton" name="relayRB">
-         <property name="text">
-          <string>Реле</string>
+       <item row="0" column="1">
+        <widget class="QGroupBox" name="connControlGB">
+         <property name="maximumSize">
+          <size>
+           <width>16777215</width>
+           <height>90</height>
+          </size>
          </property>
+         <property name="title">
+          <string>Управление</string>
+         </property>
+         <layout class="QGridLayout" name="gridLayout_7">
+          <item row="0" column="0">
+           <widget class="QPushButton" name="connectButton">
+            <property name="text">
+             <string>Соединить</string>
+            </property>
+           </widget>
+          </item>
+          <item row="1" column="0">
+           <widget class="QPushButton" name="disconnectButton">
+            <property name="text">
+             <string>Разъединить</string>
+            </property>
+           </widget>
+          </item>
+         </layout>
         </widget>
        </item>
-       <item row="1" column="1">
-        <widget class="QPushButton" name="source1Button">
-         <property name="enabled">
-          <bool>true</bool>
+       <item row="0" column="0">
+        <widget class="QGroupBox" name="connParamGB">
+         <property name="maximumSize">
+          <size>
+           <width>16777215</width>
+           <height>90</height>
+          </size>
          </property>
-         <property name="text">
-          <string>Источник 1</string>
+         <property name="title">
+          <string>Параметры соединения</string>
          </property>
-        </widget>
-       </item>
-       <item row="0" column="1" colspan="3">
-        <widget class="QPushButton" name="autoButton">
-         <property name="enabled">
-          <bool>true</bool>
-         </property>
-         <property name="text">
-          <string>Авто</string>
-         </property>
+         <layout class="QGridLayout" name="gridLayout_6">
+          <item row="0" column="3">
+           <widget class="QLabel" name="portLabel">
+            <property name="text">
+             <string>Порт</string>
+            </property>
+           </widget>
+          </item>
+          <item row="0" column="4">
+           <widget class="QSpinBox" name="portSpinBox">
+            <property name="value">
+             <number>90</number>
+            </property>
+           </widget>
+          </item>
+          <item row="0" column="0">
+           <widget class="QLabel" name="ipLabel">
+            <property name="text">
+             <string>IP</string>
+            </property>
+           </widget>
+          </item>
+          <item row="0" column="2">
+           <widget class="QComboBox" name="ipComboBox">
+            <property name="editable">
+             <bool>true</bool>
+            </property>
+           </widget>
+          </item>
+         </layout>
         </widget>
        </item>
       </layout>

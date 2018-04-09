@@ -3,9 +3,7 @@
 
 
 #include <QString>
-//#include "easylogging++.h"
-
-//INITIALIZE_EASYLOGGINGPP
+#include "easylogging++.h"
 
 class Logger
 {
